@@ -9,18 +9,14 @@
  *   a command is valid. Invalid commands have an error printed on screen.
  *   Valid commands gets processed according to what their instruction is.
  * 
+ * AUTHOR - Max Wiegant
  *
- *      ** a re-write of this documentation, with author and history, is required **
+ * DATE - Feb 15 2018
  */
 
-// TODO - clean out these include statements
-#include <time.h>
-#include <sys/time.h>
 #include <cstdio>
 #include <string>
 #include <fstream>
-
-
 
 using namespace std;
 
@@ -30,17 +26,26 @@ class ManagementSystem
     ManagementSystem();
     ~ManagementSystem();
 
-    // required; used to configure file read (additional functionality) or read from command line (default functionality)
-    bool Initialize(bool readFromFile, string fileName);
-
-    // used to begin accepting commands
-    bool Run();
+    void RunInScriptMode(string);
+    void RunInCommandLineMode();
 
   private:
+    bool isValidCommand(string command);
+    void processCommand(string command);
+
+
+    // TODO - may not need this command
     void grabNextCommand(string tokenizedCommands[]);
-    bool isValidSyntax(string tokenizedCommands[]);
-
-
 };
 
+
+
+
+
+
 #endif //DB_MANAGEMENT_SYSTEM_H
+
+
+
+
+

@@ -4,8 +4,8 @@
 
 CC = g++
 DEBUG = -g
-CFLAGS = -c -std=c++11 -pthread
-LFLAGS = -std=c++11 -pthread
+CFLAGS = -c -std=c++11
+LFLAGS = -std=c++11
 SOURCE = src/
 
 dbms : $(SOURCE)main.cpp ManagementSystem.o
