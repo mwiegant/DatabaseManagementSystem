@@ -1,0 +1,6 @@
+.DS_Store
+.idea/
+build/
+old_src/
+dbms
+*.o
