@@ -32,6 +32,7 @@ class Executer
 
   private:
   	// Database db;
+  	Parser parser;
 };
 
 
