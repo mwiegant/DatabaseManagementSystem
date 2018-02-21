@@ -44,10 +44,10 @@ int main(int argc, char **argv)
 
 
 /*
-* Helper function, to check if the filename is a valid SQL filename.
-*
-* The only criteria for being 'valid' is that the script ends in .sql
-*/
+ * Helper function, to check if the filename is a valid SQL filename.
+ *
+ * The only criteria for being 'valid' is that the script ends in .sql
+ */
 bool isValidScriptName(string sqlFilename)
 {
   size_t found = sqlFilename.find(".sql");

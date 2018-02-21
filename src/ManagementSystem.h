@@ -17,6 +17,8 @@
 #include <cstdio>
 #include <string>
 #include <fstream>
+// #include "Executer.h"
+// #include "DatabasePersister.h"
 
 using namespace std;
 
@@ -30,6 +32,20 @@ class ManagementSystem
     void RunInCommandLineMode();
 
   private:
+
+    
+
+
+
+
+
+
+
+
+
+
+
+    void trimCommand(string& command);
     bool isValidCommand(string command);
     void processCommand(string command);
 
