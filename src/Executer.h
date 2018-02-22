@@ -14,7 +14,7 @@
  */
 
 #include "Parser.h"
-// #include "Database.h"
+#include "database.h"
 #include <cstdio>
 #include <string>
 #include <fstream>
@@ -25,24 +25,18 @@ class Executer
 {
   public:
     Executer();
-    // Executer(Database db);
+    Executer(database &db);
     ~Executer();
-    // Database GetDatabase();
-    // string ExecuteCommand(string command);
+    database GetDatabase();
+    string ExecuteCommand(string command);
 
   private:
-  	// Database db;
+  	database db;
   	Parser parser;
+  	string ExecuteCreateCommand(vector<string> command);
+  	string ExecuteDropCommand(vector<string> command);
+  	string ExecuteAlterCommand(vector<string> command);
+  	string ExecuteSelectCommand(vector<string> command);
 };
 
-
-
-
-
-
 #endif //DB_EXECUTER
-
-
-
-
-
