@@ -14,11 +14,11 @@
  * DATE - Feb 15 2018
  */
 
-#include <cstdio>
+#include <iostream>
 #include <string>
 #include <fstream>
-// #include "Executer.h"
-// #include "DatabasePersister.h"
+#include "Executer.h"
+#include "DatabasePersister.h"
 
 using namespace std;
 
@@ -33,22 +33,7 @@ class ManagementSystem
 
   private:
 
-    
-
-
-
-
-
-
-
-
-
-
-
-    void trimCommand(string& command);
-    bool isValidCommand(string command);
-    void processCommand(string command);
-
+    Executer *executer;
 
     // TODO - may not need this command
     void grabNextCommand(string tokenizedCommands[]);
