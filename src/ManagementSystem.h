@@ -19,6 +19,7 @@
 #include <string>
 #include <fstream>
 #include <algorithm>
+#include <vector>
 
 #include "Executer.h"
 #include "DatabasePersister.h"
@@ -31,7 +32,7 @@ class ManagementSystem
     ManagementSystem();
     ~ManagementSystem();
 
-    void RunInScriptMode(string);
+    void RunInScriptMode(string sqlFilename);
     void RunInCommandLineMode();
 
   private:
@@ -42,7 +43,8 @@ class ManagementSystem
 
     bool loadDatabase(string dbName);
     bool saveDatabase(Database db);
-    void processCommand(string command);    
+    void processCommand(string command);
+    bool getCommandsFromFile(string filename, vector<string> &commands);
 };
 
 

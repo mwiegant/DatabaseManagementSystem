@@ -30,9 +30,21 @@ ManagementSystem::~ManagementSystem()
 // reads from an sql file, running one command at a time, until the end of the file
 void ManagementSystem::RunInScriptMode(string sqlFilename)
 {
-	// not implemented yet
+	vector<string> *commands = new vector<string>();
 
-	// will implement this after I get command line mode working.
+	// exit program if it fails to load the file
+	if (!getCommandsFromFile(sqlFilename, *commands))
+	{
+		cout << "Error - file does not exist: " << sqlFilename << endl;
+		return;
+	}
+
+	// run one command at a time from the file
+	for (vector<string>::iterator it = commands->begin(); it != commands->end(); ++it)
+	{
+    	cout << " > " << *it << endl;
+    	processCommand(*it);
+ 	}
 }
 
 
@@ -49,8 +61,6 @@ void ManagementSystem::RunInCommandLineMode()
 		cin >> userInput;
 
 		processCommand(userInput);
-
-		cout << endl;
 	} 
 	while (!exitProgram);
 }
@@ -88,7 +98,7 @@ bool ManagementSystem::loadDatabase(string dbName)
 }
 
 
-
+// process one SQL command
 void ManagementSystem::processCommand(string command)
 {
 	string lowercaseUserInput;	
@@ -102,7 +112,7 @@ void ManagementSystem::processCommand(string command)
 	if (lowercaseUserInput.find(".exit") != string::npos || 
 		lowercaseUserInput.find("exit") != string::npos)
 	{
-		cout << "All done.";
+		cout << "All done." << endl;
 		exitProgram = true;
 		return;
 	}
@@ -131,9 +141,52 @@ void ManagementSystem::processCommand(string command)
 		// pass the original command to the executer
 		cout << executer->ExecuteCommand(command);
 	}
+
+	cout << endl;
 }
 
 
+bool ManagementSystem::getCommandsFromFile(string filename, vector<string> &commands)
+{
+	ifstream fin;
+	string linedata;
+	bool readTheFile = false;
+
+	// clear input file-stream flags and open the file
+	fin.clear();
+	fin.open(filename);
+
+	// read all commands from file into a vector, looking out for comments in the file
+	while (fin.good())
+	{
+		readTheFile = true;
+
+		// get one line at a time
+		getline(fin, linedata, '\n');
+
+		// get everything before the first comment, if one exists on the current line
+		if(linedata.length() != 0)
+		{
+			size_t index = linedata.find("--");
+
+			// comment at first character on line, skip this entire line
+			if(index == 0)
+				continue;
+
+			// no comment was found, add the entire line to vector of commands
+			if(index == string::npos)
+				commands.push_back(linedata);
+
+			// otherwise, comment was found in middle of line so grab the entire line from before the comment
+			else
+				commands.push_back(linedata.substr(0, index));
+		}
+	}
+
+	fin.close();
+
+	return readTheFile;
+}
 
 
 
