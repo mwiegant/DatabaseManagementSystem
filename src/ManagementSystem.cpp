@@ -5,10 +5,17 @@ ManagementSystem::ManagementSystem()
 	exitProgram = false;
 	databasePersister = new DatabasePersister();
 	database = NULL;
+	databaseNames = NULL;
 
 	// initially, create the executer with default constructor. This allows the user
 	// to run database create / drop commands before specifying a database to use
 	executer = new Executer();
+
+	parser = new Parser();
+
+	// load list of database names
+	if(!loadDatabaseList())
+		cout << "Warning - failed to laod database list. Program may not run as intended";
 }
 
 
@@ -24,6 +31,10 @@ ManagementSystem::~ManagementSystem()
 	}
 
 	delete databasePersister;
+	delete parser;
+
+	// this is redundant, but necessary in case it was forgotten elsewhere
+	saveDatabaseList();
 }
 
 
@@ -58,7 +69,7 @@ void ManagementSystem::RunInCommandLineMode()
 	{		
 		// prompt user for input
 		cout << " > ";
-		cin >> userInput;
+		getline(cin, userInput, '\n');
 
 		processCommand(userInput);
 	} 
@@ -132,6 +143,16 @@ void ManagementSystem::processCommand(string command)
 			cout << "Using database " << token << ".";
 	}
 
+	// check for a 'create database' or 'drop database' command
+	else if (lowercaseUserInput.find("database") != string::npos)
+	{
+
+// temp
+cout << "processing database command..." << endl;
+
+		cout << processDatabaseCommand(lowercaseUserInput);
+	}
+
 	// otherwise, send command to Executer and let it handle the command
 	else
 	{
@@ -146,6 +167,51 @@ void ManagementSystem::processCommand(string command)
 }
 
 
+// processes commands to create and drop databases
+string ManagementSystem::processDatabaseCommand(string lowercaseCommand)
+{
+	string dbName;
+	vector<string> commandVector;
+	commandVector = parser->SplitCommand(lowercaseCommand);
+
+	// check for invalid command syntax
+	if(commandVector.size() != 3)
+		return "!Failed to process command, invalid syntax.";
+
+	dbName = commandVector[2];
+
+	// try to create database
+	if (commandVector[0] == "create" && commandVector[1] == "database")
+	{
+		// see if database already exists
+		if (databaseExists(dbName))
+			return "!Failed to create database " + dbName + " because it already exists.";
+
+		databaseNames->push_back(dbName);
+		databasePersister->InitializeDatabase(dbName);
+		saveDatabaseList();
+		return "Database " + dbName + " created.";
+	}
+
+	// try to drop database
+	else if (commandVector[0] == "drop" && commandVector[1] == "database")
+	{
+		// see if database does not exist
+		if (!databaseExists(dbName))
+			return "!Failed to delete " + dbName + " because it does not exist.";
+
+		databaseNames->remove(dbName);
+		databasePersister->DropDatabase(dbName);
+		saveDatabaseList();
+		return "Database " + dbName + " created.";
+	}
+
+	else
+		return "!Failed to process command, invalid syntax.";
+}
+
+
+// gets all commands from specified SQL file
 bool ManagementSystem::getCommandsFromFile(string filename, vector<string> &commands)
 {
 	ifstream fin;
@@ -189,11 +255,81 @@ bool ManagementSystem::getCommandsFromFile(string filename, vector<string> &comm
 }
 
 
+// check if the database exists in the databaseList
+bool ManagementSystem::databaseExists(string dbName)
+{
+	list<string>::iterator it;
+	for (it = databaseNames->begin(); it != databaseNames->end(); ++it)
+	{
+    	if ((*it).compare(dbName) == 0)
+    		return true;
+	}
+
+	return false;
+}
 
 
+// loads the list of database names on file
+bool ManagementSystem::loadDatabaseList()
+{	
+	ifstream fin;
+	string linedata;
+	bool readTheFile = false;
+	string path = "db/databases.meta";
+
+	// initialize database list or return the list if it has already been initialized
+	if(databaseNames != NULL)
+		return true;
+	databaseNames = new list<string>();
+
+	// clear input file-stream flags and open the file
+	fin.clear();
+	fin.open(path);
+
+	// read all database names into a list
+	while (fin.good())
+	{
+		readTheFile = true;
+
+		// get one line at a time
+		getline(fin, linedata, '\n');
+
+		if (linedata.length() > 0)
+			databaseNames->push_back(linedata);
+	}
+
+	fin.close();
+
+	return readTheFile;
+}
 
 
+// saves the list of database names to file
+bool ManagementSystem::saveDatabaseList()
+{	
+	ofstream fout;
+	string linedata;
+	bool wroteTheFile = false;
+	string path = "db/databases.meta";
 
+
+	// clear output file-stream flags and open the file
+	fout.clear();
+  	fout.open(path, fstream::app);
+
+	// read all database names into a list
+	while (fout.good() && !databaseNames->empty())
+	{
+		wroteTheFile = true;
+
+		fout << databaseNames->front();
+		databaseNames->pop_front();
+	}
+
+	fout.close();
+
+	return wroteTheFile;
+}
 
 
 
