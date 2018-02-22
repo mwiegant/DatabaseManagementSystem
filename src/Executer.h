@@ -14,7 +14,7 @@
  */
 
 #include "Parser.h"
-#include "database.h"
+#include "Database.h"
 #include <cstdio>
 #include <string>
 #include <fstream>
@@ -25,9 +25,9 @@ class Executer
 {
   public:
     Executer();
-    Executer(database &db);
+    Executer(Database &db);
     ~Executer();
-    database GetDatabase();
+    Database GetDatabase();
     string ExecuteCommand(string command);
 
   private:
@@ -36,7 +36,7 @@ class Executer
   	string ExecuteAlterCommand(vector<string> command);
   	string ExecuteSelectCommand(vector<string> command);
 
-  	database db;
+  	Database db;
   	Parser parser;
 };
 

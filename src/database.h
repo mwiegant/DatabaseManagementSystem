@@ -1,19 +1,25 @@
+#ifndef DB_DATABASE
+#define DB_DATABASE
+
 #include <string>
-#include "table.h"
+#include "Table.h"
 #include <list>
 
 using namespace std;
 
-class database
+class Database
 {
 	public:
 	
-	database();
+	Database();
 	
-	~database();
+	~Database();
 
-	private;
+	private:
 	
 	list<Table> tables;
 
-}
+};
+
+
+#endif //DB_DATABASE

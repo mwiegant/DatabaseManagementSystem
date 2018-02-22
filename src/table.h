@@ -1,3 +1,6 @@
+#ifndef DB_TABLE
+#define DB_TABLE
+
 #include <string>
 #include <list>
 #include "Row.h"
@@ -13,4 +16,7 @@ class Table
 	private:
 	
 	list<Row> rows;
-}
+};
+
+
+#endif //DB_TABLE

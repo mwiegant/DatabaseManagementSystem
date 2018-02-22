@@ -1,14 +1,14 @@
-#include "database.h"
+#include "Database.h"
 #include <string>
 
 using namespace std;
 
-database::database()
+Database::Database()
 {
 
 }
 
-database::~database()
+Database::~Database()
 {
 
 }
