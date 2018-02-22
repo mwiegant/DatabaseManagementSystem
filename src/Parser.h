@@ -17,6 +17,10 @@
 #include <cstdio>
 #include <string>
 #include <fstream>
+#include <cstdlib>
+#include <vector>
+#include <sstream>
+#include <iostream>
 
 using namespace std;
 
@@ -25,15 +29,16 @@ class Parser
   public:
     Parser();
     ~Parser();
+    string ParseCommand(string command);
+    vector<string> SplitCommand(string command);
 
   private:
+  	string ValidateCreateStatement(vector<string> command);
+  	string ValidateDropStatement(vector<string> command);
+  	string ValidateAlterStatement(vector<string> command);
+  	string ValidateSelectStatement(vector<string> command);
 
 };
 
 
 #endif //DB_PARSER
-
-
-
-
-
