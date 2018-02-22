@@ -1,34 +1,52 @@
 #ifndef DB_MANAGEMENT_SYSTEM_H
 #define DB_MANAGEMENT_SYSTEM_H
 
-#include <time.h>
-#include <sys/time.h>
-#include <cstdio>
+/*
+ * CLASS - ManagementSystem
+ *
+ * ABOUT - Driver class for running the database management system.
+ *   Reads in one command at a time from the command line and decides if
+ *   a command is valid. Invalid commands have an error printed on screen.
+ *   Valid commands gets processed according to what their instruction is.
+ * 
+ * AUTHOR - Max Wiegant
+ *
+ * DATE - Feb 15 2018
+ */
+
+#include <iostream>
 #include <string>
 #include <fstream>
-#include "database.h"
-#include <list>
-#include <map>
+#include "Executer.h"
+#include "DatabasePersister.h"
 
 using namespace std;
 
 class ManagementSystem
 {
-	public:
-	ManagementSystem();
-	~ManagementSystem();
-	
-	bool Initialize(bool readFromFile, string fileName);
+  public:
+    ManagementSystem();
+    ~ManagementSystem();
 
-	bool Run();
-	
-	private:
-	
-	void grabNextCommand(string tokenizedCommands[]);
-	
-	boool isValidSyntax(string tokenizedCommands[]);
+    void RunInScriptMode(string);
+    void RunInCommandLineMode();
 
-	database db;
+  private:
+
+    Executer *executer;
+
+    // TODO - may not need this command
+    void grabNextCommand(string tokenizedCommands[]);
 };
 
-#endif
+
+
+
+
+
+#endif //DB_MANAGEMENT_SYSTEM_H
+
+
+
+
+
