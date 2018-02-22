@@ -37,9 +37,17 @@ void ManagementSystem::RunInCommandLineMode()
 		cin >> userInput;
 
 		// check for an exit command
-		if (userInput.find(".EXIT") != string::npos)
+		if (userInput.find(".EXIT") == string::npos || 
+			userInput.find("exit") == string::npos)
 		{
+			cout << "All done." << endl;
+			exit = true;
+			continue;
+		}
 
+		else
+		{
+			
 		}
 
 	} while (!exit);

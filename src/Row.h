@@ -1,3 +1,6 @@
+#ifndef DB_ROW
+#define DB_ROW
+
 #include <string>
 #include <map>
 
@@ -14,4 +17,7 @@ class Row
 	private:
 
 	map<string, string> columns;
-}
+};
+
+
+#endif //DB_ROW

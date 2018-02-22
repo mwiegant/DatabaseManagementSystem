@@ -7,7 +7,7 @@ Executer::Executer()
 	//this->parser = new Parser();
 }
 
-Executer::Executer(database &db)
+Executer::Executer(Database &db)
 {
 	this->db = db;
 }
@@ -17,7 +17,7 @@ Executer::~Executer()
 	// not implemented yet
 }
 
-database Executer::GetDatabase()
+Database Executer::GetDatabase()
 {
 	return db;
 }
