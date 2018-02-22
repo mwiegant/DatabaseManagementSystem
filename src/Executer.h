@@ -31,12 +31,15 @@ class Executer
     string ExecuteCommand(string command);
 
   private:
-  	database db;
-  	Parser parser;
-  	string ExecuteCreateCommand(vector<string> command);
-  	string ExecuteDropCommand(vector<string> command);
+  	string ExecuteCreateTableCommand(vector<string> command);
+  	string ExecuteCreateDatabaseCommand(vector<string> command);
+  	string ExecuteDropTableCommand(vector<string> command);
+  	string ExecuteDropDatabaseCommand(vector<string> command);
   	string ExecuteAlterCommand(vector<string> command);
   	string ExecuteSelectCommand(vector<string> command);
+
+  	database db;
+  	Parser parser;
 };
 
 #endif //DB_EXECUTER
