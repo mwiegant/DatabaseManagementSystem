@@ -24,8 +24,6 @@ database Executer::GetDatabase()
 
 string Executer::ExecuteCommand(string command)
 {
-	cout << "-Executer: ExecuteCommand" << endl;
-	// not implemented
 	string result;
 	vector<string> commandVector;
 
@@ -56,38 +54,62 @@ string Executer::ExecuteCommand(string command)
 	return result;
 }
 
-string Executer::ExecuteCreateTableCommand(vector<string> command)
+string Executer::ExecuteCreateTableCommand(vector<string> commandVector)
 {
 	string message;
 
+	/*// Check if table already exists
+	for (int i = 0; i < db.tables.size(); i++)
+	{
+		Table 
+		if (db.tables[i]->name == commandVector[2])
+			message = "!Failed to create table " + commandVector[2] + " because it already exists.";
+	}*/
 
+	message = "Table " + commandVector[2] + " created.";
+
+	return message;	
 }
 
-string Executer::ExecuteCreateDatabaseCommand(vector<string> command)
+string Executer::ExecuteCreateDatabaseCommand(vector<string> commandVector)
 {
 	string message;
 
+	message = "Database " + commandVector[2] + " created.";
 
+	return message;
 }
 
-string Executer::ExecuteDropTableCommand(vector<string> command)
+string Executer::ExecuteDropTableCommand(vector<string> commandVector)
 {
 	string message;
+
+	message = "Table " + commandVector[2] + " deleted.";
+
+	return message;	
 }
 
-string Executer::ExecuteDropDatabaseCommand(vector<string> command)
+string Executer::ExecuteDropDatabaseCommand(vector<string> commandVector)
 {
 	string message;
+
+	message = "Database " + commandVector[2] + " deleted.";
+
+	return message;
 }
 
-string Executer::ExecuteAlterCommand(vector<string> command)
+string Executer::ExecuteAlterCommand(vector<string> commandVector)
 {
 	string message;
+
+	return "TEMP: ALtered table.";
 }
 
-string Executer::ExecuteSelectCommand(vector<string> command)
+string Executer::ExecuteSelectCommand(vector<string> commandVector)
 {
 	string message;
+
+	return "TEMP: Select statement executed.";
 }
 
 

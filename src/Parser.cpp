@@ -12,7 +12,7 @@ Parser::~Parser()
 
 string Parser::ParseCommand(string command)
 {
-	string result = NULL;
+	string result;
 	vector<string> commandVector;
 
 	// Break up command into a array of strings
@@ -37,7 +37,6 @@ string Parser::ParseCommand(string command)
 
 vector<string> Parser::SplitCommand(string command)
 {
-	cout << "-Parser: SplitCommand" << endl;
 	istringstream iss(command);
 	vector<string> commandVector = {istream_iterator<string>{iss},
 									istream_iterator<string>{}};
