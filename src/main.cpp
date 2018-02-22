@@ -1,5 +1,4 @@
-#define NULL 0
-
+#include <cstddef>
 #include <iostream>
 #include <string>
 

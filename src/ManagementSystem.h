@@ -15,8 +15,11 @@
  */
 
 #include <iostream>
+#include "stdio.h"
 #include <string>
 #include <fstream>
+#include <algorithm>
+
 #include "Executer.h"
 #include "DatabasePersister.h"
 
@@ -32,11 +35,14 @@ class ManagementSystem
     void RunInCommandLineMode();
 
   private:
-
+  	bool exitProgram;
+  	DatabasePersister *databasePersister;
+  	Database *database;
     Executer *executer;
 
-    // TODO - may not need this command
-    void grabNextCommand(string tokenizedCommands[]);
+    bool loadDatabase(string dbName);
+    bool saveDatabase(Database db);
+    void processCommand(string command);    
 };
 
 
