@@ -12,3 +12,24 @@ Row::~Row()
 {
 
 }
+
+map<string, string> Row::getColumn()
+{
+
+}
+
+bool Row::createColumn()
+{
+
+}
+
+bool Row::deleteColumn()
+{
+
+}
+
+string Row::getRowName()
+{
+	return rowName;
+}
+
