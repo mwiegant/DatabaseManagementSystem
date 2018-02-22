@@ -32,9 +32,7 @@ class Executer
 
   private:
   	string ExecuteCreateTableCommand(vector<string> command);
-  	string ExecuteCreateDatabaseCommand(vector<string> command);
   	string ExecuteDropTableCommand(vector<string> command);
-  	string ExecuteDropDatabaseCommand(vector<string> command);
   	string ExecuteAlterCommand(vector<string> command);
   	string ExecuteSelectCommand(vector<string> command);
 
