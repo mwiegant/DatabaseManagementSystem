@@ -15,9 +15,19 @@ class Database
 	
 	~Database();
 
+	bool createTable(string tableName);
+
+	bool getTable(string tableName, Table& table);
+	
+	bool dropTable(string tableName);
+
+	string getDatabaseName();
+
 	private:
 	
-	list<Table> tables;
+	list<Table> *tables;
+
+	string DatabaseName;
 
 };
 

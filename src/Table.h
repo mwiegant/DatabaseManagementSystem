@@ -12,10 +12,18 @@ class Table
 	public:
 	Table();
 	~Table();
+	Table(string tableName);
+	~Table();
+	Row getRow();
+	bool createRow();
+	bool deleteRow();
+	string getTableName();
+	Table& operator = (const Table& other);
 	
 	private:
 	
 	list<Row> rows;
+	string TableName;
 };
 
 
