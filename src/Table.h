@@ -20,7 +20,7 @@ class Table
 	
 	private:
 	
-	list<Row> rows;
+	list<Row> *rows;
 	string TableName;
 };
 
