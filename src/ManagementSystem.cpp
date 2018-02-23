@@ -86,7 +86,7 @@ void ManagementSystem::RunInCommandLineMode()
 bool ManagementSystem::loadDatabase(string dbName)
 {
 	Database *newDb;
-	// Database *newDb = databasePersister->loadDatabase(dbName);
+	newDb = databasePersister->loadDatabase(dbName);
 
 	// check if the database actually exists, and return error if it does not
 	if (newDb == NULL)
