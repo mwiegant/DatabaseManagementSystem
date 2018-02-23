@@ -42,7 +42,7 @@ bool Database::getTableQuery(string tableName, Table& table)
 {
 	for (list<Table>::iterator iterator = tables->begin(), end = tables->end(); iterator != end; iterator++)
 	{
-		if((*iterator).getTableName().compare(tableName) == 0)	
+		if(iterator->getTableName().compare(tableName) == 0)	
 		{
 			table = *iterator;
 			return true;

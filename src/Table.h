@@ -20,7 +20,7 @@ class Table
 	Table& operator = (const Table& other);
 	map<string, string> getColumns();
 	bool createColumn(string colName, string colType);
-	bool deleteColumn();
+	bool deleteColumn(string colName);
 	
 	private:
 	
