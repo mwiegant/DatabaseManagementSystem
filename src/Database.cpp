@@ -12,6 +12,14 @@ Database::Database()
 	tables = new list<Table>();
 }
 
+Database::Database(list<Table> table)
+{
+	for (list<Table>::iterator iterator = table.begin(), end = table.end(); iterator != end; iterator++)
+	{
+		createTable((*iterator).getTableName());
+	}
+}
+
 Database::~Database()
 {
 
@@ -20,8 +28,8 @@ Database::~Database()
 bool Database::createTable(string tableName)
 {		
 	Table *table;
-	
-	if (getTable(tableName, *table) == false)
+
+	if (getTableQuery(tableName, *table) == false)
 	{
 		table = new Table(tableName);
 		tables->push_back(*table);
@@ -30,7 +38,7 @@ bool Database::createTable(string tableName)
 return false;
 }
 
-bool Database::getTable(string tableName, Table& table)
+bool Database::getTableQuery(string tableName, Table& table)
 {
 	for (list<Table>::iterator iterator = tables->begin(), end = tables->end(); iterator != end; iterator++)
 	{
@@ -46,12 +54,19 @@ return false;
 bool Database::dropTable(string tableName)
 {
 	Table *temp;
-	getTable(tableName, *temp);
+	if (getTableQuery(tableName, *temp) == true)
+	{
 	delete temp;
-	return true;
+	}
+return true;
 }
 
 string Database::getDatabaseName()
 {
 	return DatabaseName;
+}
+
+bool Database::updateTable(string tableName, Table& table)
+{
+
 }

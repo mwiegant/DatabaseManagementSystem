@@ -12,16 +12,20 @@ class Database
 	public:
 	
 	Database();
+
+	Database(list<Table> table);
 	
 	~Database();
 
 	bool createTable(string tableName);
 
-	bool getTable(string tableName, Table& table);
+	bool getTableQuery(string tableName, Table& table);
 	
 	bool dropTable(string tableName);
 
 	string getDatabaseName();
+
+	bool updateTable(string tableName, Table& table);
 
 	private:
 	
