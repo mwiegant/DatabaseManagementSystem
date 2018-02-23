@@ -54,9 +54,10 @@ string Executer::ExecuteCreateTableCommand(vector<string> commandVector)
 {
 	string message;
 
-	//message = db.CreateTable(commandVector[2]) PS. commandVector[2] is the name of the table
-
-	message = "TEMP: Table " + commandVector[2] + " created.";
+	if (db.createTable(commandVector[2]))
+		message = "Table " + commandVector[2] + " created.";
+	else
+		message = "!Failed to create table " + commandVector[2] + " because it already exists.";
 
 	return message;	
 }
@@ -64,10 +65,11 @@ string Executer::ExecuteCreateTableCommand(vector<string> commandVector)
 string Executer::ExecuteDropTableCommand(vector<string> commandVector)
 {
 	string message;
-
-	//message = db.DropTable(commandVector[2]); PS. commandVector[2] is the name of the table
-
-	message = "TEMP: Table " + commandVector[2] + " deleted."; 
+	
+	if (db.dropTable(commandVector[2]))
+		message = "Table " + commandVector[2] + " deleted.";
+	else
+		message = "!Failed to delete " + commandVector[2] + " because it does not exist.";
 
 	return message;	
 }
