@@ -44,9 +44,9 @@ Table& Table::operator = (const Table& other)
 return *this;
 }
 
-map<string, string> Table::getColumn()
+map<string, string> Table::getColumns()
 {
-
+	return columns;
 }
 
 bool Table::createColumn(string colName, string colType)
@@ -56,7 +56,7 @@ bool Table::createColumn(string colName, string colType)
 
 bool Table::deleteColumn()
 {
-
+	
 }
 
 
