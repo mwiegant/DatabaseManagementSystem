@@ -1,0 +1,27 @@
+-------------
+Known Issues
+-------------
+
+- seg fault on USE db_1;
+- cannot save databases to file (not implemented yet)
+
+
+----------------------
+Untested Functionality
+----------------------
+
+- loading databases from file
+- creating tables (with columns)
+- dropping tables
+- altering tables: dropping columns
+- altering tables: adding columns
+- querying tables
+- saving database to file, after selecting a new database to use
+
+
+-------
+Pending
+-------
+
+- need to create detailed document of design of our program (according to assignment specification)
+- need to turn our assignment in (lol)
