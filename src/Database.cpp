@@ -55,7 +55,7 @@ bool Database::dropTable(string tableName)
 {
 	for (list<Table>::iterator iterator = tables->begin(), end = tables->end(); iterator != end; iterator++)
 	{
-		cout << "Table name: " << (*iterator).getTableName() << endl;
+		
 		if(iterator->getTableName().compare(tableName) == 0)	
 		{
 			tables->erase(iterator);
