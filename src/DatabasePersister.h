@@ -4,20 +4,23 @@
 /*
  * CLASS - DatabasePersister
  *
- * ABOUT - 
- *   
- *   
- *   
+ * ABOUT - Saves and loads database objects to and from file.
+ *   Also responsible for creating new database entries on the file
+ *   system and deleting database entries from the file system.
  * 
- * AUTHOR - 
+ * AUTHOR - Max Wiegant
  *
  * DATE - Feb 15 2018
  */
 
-
+#include <cstdlib>
 #include <string>
+#include <cstring>
 #include <fstream>
+#include <list>
+#include <iostream>
 #include "Database.h"
+#include "Table.h"
 
 using namespace std;
 
@@ -27,14 +30,14 @@ class DatabasePersister
     DatabasePersister();
     ~DatabasePersister();
 
-    // Database loadDatabase(string databaseName);
-    // bool saveDatabase(Database database);
+    void loadDatabase(string databaseName, Database *db);
+    bool saveDatabase(Database database);
     void InitializeDatabase(string databaseName);
     void DropDatabase(string databaseName);
 
   private:
-
-    // todo
+  	bool loadTablesMeta(string dbName, list<string> *tableNames);
+  	bool loadTable(string dbName, string tableName, Table *table);
 };
 
 

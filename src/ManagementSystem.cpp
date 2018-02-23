@@ -86,7 +86,7 @@ void ManagementSystem::RunInCommandLineMode()
 bool ManagementSystem::loadDatabase(string dbName)
 {
 	Database *newDb;
-	newDb = databasePersister->loadDatabase(dbName);
+	databasePersister->loadDatabase(dbName, newDb);
 
 	// check if the database actually exists, and return error if it does not
 	if (newDb == NULL)
@@ -146,10 +146,6 @@ void ManagementSystem::processCommand(string command)
 	// check for a 'create database' or 'drop database' command
 	else if (lowercaseUserInput.find("database") != string::npos)
 	{
-
-// temp
-cout << "processing database command..." << endl;
-
 		cout << processDatabaseCommand(lowercaseUserInput);
 	}
 
@@ -203,7 +199,7 @@ string ManagementSystem::processDatabaseCommand(string lowercaseCommand)
 		databaseNames->remove(dbName);
 		databasePersister->DropDatabase(dbName);
 		saveDatabaseList();
-		return "Database " + dbName + " created.";
+		return "Database " + dbName + " deleted.";
 	}
 
 	else
@@ -261,6 +257,10 @@ bool ManagementSystem::databaseExists(string dbName)
 	list<string>::iterator it;
 	for (it = databaseNames->begin(); it != databaseNames->end(); ++it)
 	{
+
+//TEMP
+cout << "comparing '" << *it << "' against user specified " << dbName << endl;
+
     	if ((*it).compare(dbName) == 0)
     		return true;
 	}
@@ -311,19 +311,21 @@ bool ManagementSystem::saveDatabaseList()
 	string linedata;
 	bool wroteTheFile = false;
 	string path = "db/databases.meta";
-
+	list<string>::iterator it;
+	
+	it = databaseNames->begin();
 
 	// clear output file-stream flags and open the file
 	fout.clear();
-  	fout.open(path, fstream::app);
+  	fout.open(path);
 
 	// read all database names into a list
-	while (fout.good() && !databaseNames->empty())
+	while (fout.good() && it != databaseNames->end())
 	{
 		wroteTheFile = true;
 
-		fout << databaseNames->front();
-		databaseNames->pop_front();
+		fout << *it << endl;
+		it++;
 	}
 
 	fout.close();
