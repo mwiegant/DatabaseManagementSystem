@@ -5,6 +5,7 @@ using namespace std;
 Table::Table(string tableName)
 {
 	TableName = tableName;
+	rows = new list<Row>();
 }
 
 Table::~Table()

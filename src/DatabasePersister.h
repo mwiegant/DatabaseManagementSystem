@@ -29,6 +29,8 @@ class DatabasePersister
 
     // Database loadDatabase(string databaseName);
     // bool saveDatabase(Database database);
+    void InitializeDatabase(string databaseName);
+    void DropDatabase(string databaseName);
 
   private:
 

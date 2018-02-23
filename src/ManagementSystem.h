@@ -15,8 +15,13 @@
  */
 
 #include <iostream>
+#include "stdio.h"
 #include <string>
 #include <fstream>
+#include <algorithm>
+#include <vector>
+
+#include "Parser.h"
 #include "Executer.h"
 #include "DatabasePersister.h"
 
@@ -28,15 +33,25 @@ class ManagementSystem
     ManagementSystem();
     ~ManagementSystem();
 
-    void RunInScriptMode(string);
+    void RunInScriptMode(string sqlFilename);
     void RunInCommandLineMode();
 
   private:
-
+  	bool exitProgram;
+  	DatabasePersister *databasePersister;
+  	Database *database;
     Executer *executer;
+    Parser *parser;
+    list<string> *databaseNames;
 
-    // TODO - may not need this command
-    void grabNextCommand(string tokenizedCommands[]);
+    bool loadDatabase(string dbName);
+    bool saveDatabase(Database db);    
+    void processCommand(string command);
+    string processDatabaseCommand(string lowercaseCommand);
+    bool getCommandsFromFile(string filename, vector<string> &commands);
+    bool databaseExists(string dbName);
+    bool loadDatabaseList();
+    bool saveDatabaseList();
 };
 
 

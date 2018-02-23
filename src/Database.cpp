@@ -18,10 +18,16 @@ Database::~Database()
 }
 
 bool Database::createTable(string tableName)
-{
-	Table *table = new Table(tableName);
-	tables->push_back(*table);
-	return true;
+{		
+	Table *table;
+	
+	if (getTable(tableName, *table) == false)
+	{
+		table = new Table(tableName);
+		tables->push_back(*table);
+		return true;
+	}
+return false;
 }
 
 bool Database::getTable(string tableName, Table& table)
