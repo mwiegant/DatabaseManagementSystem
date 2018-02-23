@@ -21,6 +21,7 @@
 #include <vector>
 #include <sstream>
 #include <iostream>
+#include <iterator>
 
 using namespace std;
 
