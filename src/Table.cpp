@@ -44,6 +44,20 @@ Table& Table::operator = (const Table& other)
 return *this;
 }
 
+map<string, string> Table::getColumn()
+{
+
+}
+
+bool Table::createColumn(string colName, string colType)
+{
+	columns.insert(pair<string, string>(colName, colType));
+}
+
+bool Table::deleteColumn()
+{
+
+}
 
 
 

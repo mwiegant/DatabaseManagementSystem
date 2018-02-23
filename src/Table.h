@@ -3,6 +3,7 @@
 
 #include <string>
 #include <list>
+#include <map>
 #include "Row.h"
 
 using namespace std;
@@ -17,11 +18,15 @@ class Table
 	bool deleteRow();
 	string getTableName();
 	Table& operator = (const Table& other);
+	map<string, string> getColumn();
+	bool createColumn(string colName, string colType);
+	bool deleteColumn();
 	
 	private:
 	
 	list<Row> *rows;
 	string TableName;
+	map<string, string> columns;
 };
 
 

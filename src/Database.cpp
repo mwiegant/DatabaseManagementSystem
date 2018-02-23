@@ -57,8 +57,9 @@ bool Database::dropTable(string tableName)
 	if (getTableQuery(tableName, *temp) == true)
 	{
 	delete temp;
+	return true;
 	}
-return true;
+return false;
 }
 
 string Database::getDatabaseName()
@@ -68,5 +69,5 @@ string Database::getDatabaseName()
 
 bool Database::updateTable(string tableName, Table& table)
 {
-
+	
 }
