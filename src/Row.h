@@ -14,10 +14,16 @@ class Row
 	Row();
 	~Row();
 
-	private:
+	map<string, string> getColumn();
+	bool createColumn();
+	bool deleteColumn();
+	string getRowName();
 
+	private:
 	map<string, string> columns;
+	string rowName;
 };
 
 
 #endif //DB_ROW
+
