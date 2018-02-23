@@ -53,13 +53,16 @@ return false;
 	
 bool Database::dropTable(string tableName)
 {
-	Table *temp;
-	if (getTableQuery(tableName, *temp) == true)
+	for (list<Table>::iterator iterator = tables->begin(), end = tables->end(); iterator != end; iterator++)
 	{
-	delete temp;
-	return true;
+		cout << "Table name: " << (*iterator).getTableName() << endl;
+		if(iterator->getTableName().compare(tableName) == 0)	
+		{
+			tables->erase(iterator);
+			return true;
+		}
 	}
-return false;
+ return false;
 }
 
 string Database::getDatabaseName()

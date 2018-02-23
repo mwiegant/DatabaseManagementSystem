@@ -37,6 +37,7 @@ string Parser::ParseCommand(string command)
 
 vector<string> Parser::SplitCommand(string command)
 {
+	command.pop_back(); 
 	istringstream iss(command);
 	vector<string> commandVector = {istream_iterator<string>{iss},
 									istream_iterator<string>{}};
