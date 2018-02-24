@@ -72,5 +72,14 @@ string Database::getDatabaseName()
 
 bool Database::updateTable(string tableName, Table& table)
 {
-	
+for (list<Table>::iterator iterator = tables->begin(), end = tables->end(); iterator != end; iterator++)
+	{
+		
+		if(iterator->getTableName().compare(tableName) == 0)	
+		{
+			*iterator = table;
+			return true;
+		}
+	}
+ return false;
 }

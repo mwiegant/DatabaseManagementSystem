@@ -18,7 +18,7 @@ class Table
 	bool deleteRow();
 	string getTableName();
 	Table& operator = (const Table& other);
-	map<string, string> getColumns();
+	map<string, string> getColumns() const;
 	bool createColumn(string colName, string colType);
 	bool deleteColumn(string colName);
 	
@@ -26,7 +26,7 @@ class Table
 	
 	list<Row> *rows;
 	string TableName;
-	map<string, string> columns;
+	map<string, string> *columns;
 };
 
 
