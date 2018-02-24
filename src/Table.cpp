@@ -39,8 +39,6 @@ Table& Table::operator = (const Table& other)
 {
 	if (this != &other)
 	{
-		/*for (map<string, string>::iterator iterator = temp.begin(), end = temp.end(); iterator != end; iterator++)
-		{*/
 		*columns = other.getColumns();
 		TableName = other.TableName;
 	}

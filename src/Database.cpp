@@ -28,8 +28,8 @@ Database::~Database()
 
 bool Database::createTable(string tableName)
 {		
-	Table *table;
-
+	Table *table = new Table("");
+	
 	if (getTableQuery(tableName, *table) == false)
 	{
 		table = new Table(tableName);
@@ -40,13 +40,13 @@ return false;
 }
 
 bool Database::getTableQuery(string tableName, Table& table)
-{
+{	
 	for (list<Table>::iterator iterator = tables->begin(), end = tables->end(); iterator != end; iterator++)
 	{
 		if(iterator->getTableName().compare(tableName) == 0)	
-		{
-			table = *iterator;
-			return true;
+		{  
+			table = *iterator; 
+			return true; 
 		}
 	}
 return false;
