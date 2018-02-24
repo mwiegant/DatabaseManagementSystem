@@ -16,18 +16,21 @@ Table::~Table()
 
 Row Table::getRow()
 {
-
+	Row row;
+	return row;
 }
 
 
 bool Table::createRow()
 {
-
+	// temp
+	return true;
 }
 
 bool Table::deleteRow()
 {
-
+	// temp
+	return true;
 }
 
 string Table::getTableName()
