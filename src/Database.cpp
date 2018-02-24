@@ -14,11 +14,7 @@ Database::Database()
 
 Database::Database(list<Table> table)
 {
-	tables = new list<Table>();
-	for (list<Table>::iterator iterator = table.begin(), end = table.end(); iterator != end; iterator++)
-	{
-		createTable((*iterator).getTableName());
-	}
+	tables = new list<Table>(table);
 }
 
 Database::~Database()

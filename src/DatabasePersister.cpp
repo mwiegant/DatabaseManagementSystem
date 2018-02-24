@@ -13,12 +13,14 @@ DatabasePersister::~DatabasePersister()
 
 
 // loads an empty database object with Tables and table data from memory
-void DatabasePersister::loadDatabase(string databaseName, Database *db)
+Database* DatabasePersister::loadDatabase(string databaseName)
 {
 	list<string> *tableNames;
 	list<Table> *tables;
+	Database *db;
 
-	
+	db = nullptr;
+	tableNames = new list<string>();
 	tables = new list<Table>();
 
 	// load the database's table.meta file, which contains the tables to load
@@ -29,13 +31,13 @@ void DatabasePersister::loadDatabase(string databaseName, Database *db)
 		// for each table name
 		for (tableNameIterator = tableNames->begin(); tableNameIterator != tableNames->end(); ++tableNameIterator)
 		{
-			Table *table;
-
+			Table newTable(*tableNameIterator);
+			
 			// load table (print an error if table load fails, then move on to next table)
-	    	if(loadTable(databaseName, *tableNameIterator, table))
+	    	if(loadTable(databaseName, *tableNameIterator, &newTable))
     		{
     			// save table to list
-    			tables->push_back(*table);
+    			tables->push_back(newTable);
     		}
     		else
     		{
@@ -47,16 +49,29 @@ void DatabasePersister::loadDatabase(string databaseName, Database *db)
 	else
 	{
 		cout << "Error - failed to load table.meta file from database " << databaseName << "." << endl;
+		db = new Database();
+		return db;
 	}
 	
-	// create new database with tables after all tables have been loaded
-	db = new Database(*tables);
+
+	if (tables->size() > 0)
+	{
+		// create new database with tables after all tables have been loaded
+		db = new Database(*tables);
+	}
+	else
+	{
+		db = new Database();
+	}
+
+	return db;
 }
 
 
 bool DatabasePersister::saveDatabase(Database database)
 {
-
+	// temp
+	return false;
 }
 
 
@@ -85,7 +100,6 @@ bool DatabasePersister::loadTablesMeta(string dbName, list<string> *tableNames)
 	string linedata;
 	bool readTheFile = false;
 	string path = "db/" + dbName + "/tables.meta";
-	tableNames = new list<string>();
 
 	try
 	{
@@ -121,9 +135,7 @@ bool DatabasePersister::loadTable(string dbName, string tableName, Table *table)
 	ifstream fin;
 	string colName, colType;
 	bool readTheFile = false;
-	string path = "db/" + dbName + "/schema.meta";
-
-	table = new Table(tableName);
+	string path = "db/" + dbName + "/" + tableName + "/schema.meta";
 
 	try
 	{
@@ -140,7 +152,8 @@ bool DatabasePersister::loadTable(string dbName, string tableName, Table *table)
 			getline(fin, colName, ' ');
 			getline(fin, colType, '\n');
 
-			table->createColumn(colName, colType);
+			if(colName.length() > 0 && colType.length() > 0)
+				table->createColumn(colName, colType);
 		}
 
 		fin.close();

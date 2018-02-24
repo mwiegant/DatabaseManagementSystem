@@ -86,10 +86,11 @@ void ManagementSystem::RunInCommandLineMode()
 bool ManagementSystem::loadDatabase(string dbName)
 {
 	Database *newDb;
-	databasePersister->loadDatabase(dbName, newDb);
+
+	newDb = databasePersister->loadDatabase(dbName);
 
 	// check if the database actually exists, and return error if it does not
-	if (newDb == NULL)
+	if (newDb == nullptr)
 		return false;
 
 	// check if a database object was already loaded, and if save it to the filesystem
@@ -135,12 +136,12 @@ void ManagementSystem::processCommand(string command)
 		strcpy(temp, lowercaseUserInput.c_str());
 
 		token = strtok(temp, " "); // grabs the 'use' word
-		token = strtok(NULL, " "); // ...and now we've grabbed the database name
+		token = strtok(NULL, "; "); // ...and now we've grabbed the database name
 
-		if(!loadDatabase(token))
-			cout << "!Failed to load '" << token << "' database.";
+		if(loadDatabase(token))
+			cout << "Using database " << token << ".";			
 		else
-			cout << "Using database " << token << ".";
+			cout << "!Failed to load '" << token << "' database.";
 	}
 
 	// check for a 'create database' or 'drop database' command
@@ -312,7 +313,7 @@ bool ManagementSystem::saveDatabaseList()
 	bool wroteTheFile = false;
 	string path = "db/databases.meta";
 	list<string>::iterator it;
-	
+
 	it = databaseNames->begin();
 
 	// clear output file-stream flags and open the file
