@@ -4,6 +4,7 @@
 #include <string>
 #include "Table.h"
 #include <list>
+#include <vector>
 
 using namespace std;
 
@@ -18,6 +19,8 @@ class Database
 	~Database();
 
 	bool createTable(string tableName);
+
+	bool createTable(string tableName, vector<pair<string, string>> columnInfo);
 
 	bool getTableQuery(string tableName, Table& table);
 	

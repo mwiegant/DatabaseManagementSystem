@@ -3,8 +3,7 @@
 
 Executer::Executer()
 {
-	// not implemented yet
-	//this->parser = new Parser();
+
 }
 
 Executer::Executer(Database &db)
@@ -71,13 +70,15 @@ string Executer::ExecuteCreateTableCommand(vector<string> commandVector)
 	// If create command has column info
 	else
 	{
-		if (db.createTable(commandVector[2]))
-		{
-			Table table;
-			db.getTableQuery(commandVector[2], table);
-		}
-	}
+		vector<pair<string, string>> columnInfo;
 
+		columnInfo = parser.ParseColumnInfo(commandVector);
+
+		if (db.createTable(commandVector[2], columnInfo))
+			message = "Table " + commandVector[2] + " created.";
+		else
+			message = "!Failed to create table " + commandVector[2] + " because it already exists.";
+	}
 
 	return message;	
 }
@@ -121,8 +122,6 @@ string Executer::ExecuteSelectCommand(vector<string> commandVector)
 
 	return "TEMP: Select statement executed.";
 }
-
-
 
 
 

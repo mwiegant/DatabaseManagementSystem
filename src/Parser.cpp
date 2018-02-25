@@ -69,6 +69,18 @@ vector<string> Parser::SplitCommand(string command)
 	return commandVector;
 }
 
+vector<pair<string,string>> Parser::ParseColumnInfo(vector<string> commandVector)
+{
+	vector<pair<string,string>> columnInfo;
+
+	for (int i = 3; i < commandVector.size(); i+=2)
+	{
+		columnInfo.push_back(make_pair(commandVector[i], commandVector[i+1]));
+	}
+	return columnInfo;
+}
+
+
 string Parser::ValidateCreateStatement(vector<string> command)
 {
 	return "valid";

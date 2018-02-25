@@ -32,6 +32,7 @@ class Parser
     ~Parser();
     string ParseCommand(string command);
     vector<string> SplitCommand(string command);
+    vector<pair<string,string>> ParseColumnInfo(vector<string> commandVector);
 
   private:
   	string ValidateCreateStatement(vector<string> command);
