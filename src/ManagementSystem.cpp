@@ -259,9 +259,6 @@ bool ManagementSystem::databaseExists(string dbName)
 	for (it = databaseNames->begin(); it != databaseNames->end(); ++it)
 	{
 
-//TEMP
-cout << "comparing '" << *it << "' against user specified " << dbName << endl;
-
     	if ((*it).compare(dbName) == 0)
     		return true;
 	}

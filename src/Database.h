@@ -24,8 +24,11 @@ class Database
 	bool dropTable(string tableName);
 
 	string getDatabaseName();
+	void setDatabaseName(string dbName);
 
 	bool updateTable(string tableName, Table& table);
+
+	list<string> getTableNames();
 
 	private:
 	

@@ -67,6 +67,11 @@ string Database::getDatabaseName()
 	return DatabaseName;
 }
 
+void Database::setDatabaseName(string dbName)
+{
+	DatabaseName = dbName;
+}
+
 bool Database::updateTable(string tableName, Table& table)
 {
 for (list<Table>::iterator iterator = tables->begin(), end = tables->end(); iterator != end; iterator++)
@@ -79,4 +84,16 @@ for (list<Table>::iterator iterator = tables->begin(), end = tables->end(); iter
 		}
 	}
  return false;
+}
+
+list<string> Database::getTableNames()
+{
+	list<string> tableNames;
+
+	for (list<Table>::iterator iterator = tables->begin(), end = tables->end(); iterator != end; iterator++)
+	{
+		tableNames.push_back(iterator->getTableName());
+	}
+
+	return tableNames;
 }
