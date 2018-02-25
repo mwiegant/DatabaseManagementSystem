@@ -42,6 +42,30 @@ vector<string> Parser::SplitCommand(string command)
 	vector<string> commandVector = {istream_iterator<string>{iss},
 									istream_iterator<string>{}};
 
+	// If a create statement with column info, format the column info
+	if (commandVector.size() > 3 && commandVector[0] == "CREATE")
+	{
+		// Remove the left paranthese of column info
+		commandVector[3] = commandVector[3].erase(0,1);
+		// Remove the last parenthese of column info
+		commandVector[commandVector.size() - 1].pop_back();
+
+		vector<string>::iterator it;
+		int i = 0;
+		for(it = commandVector.begin(); it != commandVector.end(); it++,i++ )    
+		{
+			string temp = commandVector[i];
+    		size_t found = temp.find_first_of(',');
+
+    		while (found!=std::string::npos)
+  			{
+   				temp[found]=' ';
+    			found=temp.find_first_of(",",found+1);
+  			}
+  			commandVector[i] = temp;
+   		}
+	}
+
 	return commandVector;
 }
 

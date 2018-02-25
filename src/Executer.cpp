@@ -54,10 +54,30 @@ string Executer::ExecuteCreateTableCommand(vector<string> commandVector)
 {
 	string message;
 
-	if (db.createTable(commandVector[2]))
-		message = "Table " + commandVector[2] + " created.";
+	cout << commandVector.size() << endl;
+
+	for (int i = 0; i < commandVector.size(); i++)
+		cout << "Value: " + commandVector[i] << endl;
+
+	// Create table without column info
+	if (commandVector.size() < 3)
+	{
+		if (db.createTable(commandVector[2]))
+			message = "Table " + commandVector[2] + " created.";
+		else
+			message = "!Failed to create table " + commandVector[2] + " because it already exists.";
+	}
+
+	// If create command has column info
 	else
-		message = "!Failed to create table " + commandVector[2] + " because it already exists.";
+	{
+		if (db.createTable(commandVector[2]))
+		{
+			Table table;
+			db.getTableQuery(commandVector[2], table);
+		}
+	}
+
 
 	return message;	
 }
@@ -78,9 +98,19 @@ string Executer::ExecuteAlterCommand(vector<string> commandVector)
 {
 	string message;
 
-	// message = Alter(commandVector); -- Idk what parameters will be here quite yet
+	Table table("");
 
-	return "TEMP: ALtered table.";
+	if (commandVector[3] == "ADD")
+	{
+		if (db.getTableQuery(commandVector[2], table))
+		{
+			table.createColumn(commandVector[4], commandVector[5]);
+			message = "Table " + table.getTableName() + " modified.";
+		}
+		else
+			message = "Table " + commandVector[2] + " was not found.";
+	}
+	return message;
 }
 
 string Executer::ExecuteSelectCommand(vector<string> commandVector)
