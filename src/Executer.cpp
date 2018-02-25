@@ -53,11 +53,6 @@ string Executer::ExecuteCreateTableCommand(vector<string> commandVector)
 {
 	string message;
 
-	cout << commandVector.size() << endl;
-
-	for (int i = 0; i < commandVector.size(); i++)
-		cout << "Value: " + commandVector[i] << endl;
-
 	// Create table without column info
 	if (commandVector.size() < 3)
 	{
@@ -103,7 +98,7 @@ string Executer::ExecuteAlterCommand(vector<string> commandVector)
 
 	if (commandVector[3] == "ADD")
 	{
-		if (db.getTableQuery(commandVector[2], table))
+		if (db.getTable(commandVector[2], table))
 		{
 			table.createColumn(commandVector[4], commandVector[5]);
 			message = "Table " + table.getTableName() + " modified.";

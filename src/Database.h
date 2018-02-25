@@ -22,11 +22,12 @@ class Database
 
 	bool createTable(string tableName, vector<pair<string, string>> columnInfo);
 
-	bool getTableQuery(string tableName, Table& table);
+	bool getTable(string tableName, Table& table);
 	
 	bool dropTable(string tableName);
 
 	string getDatabaseName();
+	
 	void setDatabaseName(string dbName);
 
 	bool updateTable(string tableName, Table& table);

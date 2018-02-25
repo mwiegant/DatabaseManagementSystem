@@ -26,7 +26,7 @@ bool Database::createTable(string tableName)
 {		
 	Table *table = new Table("");
 	
-	if (getTableQuery(tableName, *table) == false)
+	if (getTable(tableName, *table) == false)
 	{
 		table = new Table(tableName);
 		tables->push_back(*table);
@@ -39,12 +39,10 @@ bool Database::createTable(string tableName, vector<pair<string, string>> column
 {
 	Table *table = new Table("");
 	
-	if (getTableQuery(tableName, *table) == false)
+	if (getTable(tableName, *table) == false)
 	{
-		table = new Table(tableName);
-
 		for (int i = 0; i < columnInfo.size(); i++)
-			cout << "First: " << columnInfo[i].first << " Second: " << columnInfo[i].second << endl;
+			table->createColumn(columnInfo[i].first, columnInfo[i].second);
 
 		tables->push_back(*table);
 		return true;
@@ -52,7 +50,7 @@ bool Database::createTable(string tableName, vector<pair<string, string>> column
 return false;
 }
 
-bool Database::getTableQuery(string tableName, Table& table)
+bool Database::getTable(string tableName, Table& table)
 {	
 	for (list<Table>::iterator iterator = tables->begin(), end = tables->end(); iterator != end; iterator++)
 	{
