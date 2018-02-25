@@ -37,7 +37,7 @@ return false;
 
 bool Database::createTable(string tableName, vector<pair<string, string>> columnInfo)
 {
-	Table *table = new Table("");
+	Table *table = new Table(tableName);
 	
 	if (getTable(tableName, *table) == false)
 	{

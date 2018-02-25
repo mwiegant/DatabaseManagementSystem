@@ -53,7 +53,7 @@ void ManagementSystem::RunInScriptMode(string sqlFilename)
 	// run one command at a time from the file
 	for (vector<string>::iterator it = commands->begin(); it != commands->end(); ++it)
 	{
-    	cout << " > " << *it << endl;
+    	//cout << " > " << *it << endl;
     	processCommand(*it);
  	}
 }

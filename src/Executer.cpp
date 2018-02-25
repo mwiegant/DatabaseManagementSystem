@@ -113,9 +113,25 @@ string Executer::ExecuteSelectCommand(vector<string> commandVector)
 {
 	string message;
 
-	// message = Select(commandVector); -- Idk what parameters will be here quite yet
+	Table table("");
 
-	return "TEMP: Select statement executed.";
+	if (db.getTable(commandVector[3], table))
+	{
+		map<string,string> columns;
+		columns = table.getColumns();
+		map<string, string>::iterator it;
+
+		for (it = columns.begin(); it != columns.end(); it++)
+		{
+			message = message + it->first + " " + it->second + "| ";
+		}
+		message.pop_back();
+		message.pop_back();
+	}
+	else
+		message = "!Failed to query " + commandVector[3] + " because it does not exist.";
+
+	return message;
 }
 
 
