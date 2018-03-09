@@ -1,11 +1,7 @@
 package dbms;
 
-import java.util.HashMap;
 import java.util.Map;
 import java.util.Vector;
-
-import javax.swing.text.html.HTMLDocument.Iterator;
-
 import javafx.util.Pair;
 
 public class Executer {
@@ -15,11 +11,12 @@ public class Executer {
 	
 	Executer()
 	{
-		
+		this.parser = new Parser();
 	}
 	
 	Executer(Database db)
 	{
+		this.parser = new Parser();
 		this.db = db;
 	}
 	
@@ -37,17 +34,17 @@ public class Executer {
 		result = parser.parseCommand(command);
 		commandVector = parser.splitCommand(command);
 
-		if (result != "valid")
+		if (!result.equals("valid"))
 			result = "INVALID SQL SYNTAX: " + result;
 
 		// Otherwise execute command
-		else if (commandVector.elementAt(0) == "CREATE" && commandVector.elementAt(1) == "TABLE")
+		else if (commandVector.elementAt(0).equals("CREATE") && commandVector.elementAt(1).equals("TABLE"))
 			result = executeCreateTableCommand(commandVector);
-		else if (commandVector.elementAt(0) == "DROP" && commandVector.elementAt(1) == "TABLE")
+		else if (commandVector.elementAt(0).equals("DROP") && commandVector.elementAt(1).equals("TABLE"))
 			result = executeDropTableCommand(commandVector);
-		else if (commandVector.elementAt(0) == "ALTER")
+		else if (commandVector.elementAt(0).equals("ALTER"))
 			result = executeAlterCommand(commandVector);
-		else if (commandVector.elementAt(0) == "SELECT")
+		else if (commandVector.elementAt(0).equals("SELECT"))
 			result = executeSelectCommand(commandVector);
 		else
 			result = "INVALID SQL COMMAND";
@@ -103,7 +100,7 @@ public class Executer {
 
 		Table table = new Table();
 
-		if (commandVector.elementAt(3) == "ADD")
+		if (commandVector.elementAt(3).equals("ADD"))
 		{
 			if (db.getTable(commandVector.elementAt(2), table))
 			{
@@ -118,8 +115,7 @@ public class Executer {
 
 	String executeSelectCommand(Vector<String> commandVector)
 	{
-		String message = "";
-
+		String message = new String();
 		Table table = new Table();
 
 		if (db.getTable(commandVector.elementAt(3), table))
@@ -131,7 +127,8 @@ public class Executer {
 			{
 				message = message + entry.getKey() + " " + entry.getValue() + "| ";
 			}
-			message = message.substring(0, message.length() - 2);
+			if (!message.isEmpty())
+				message = message.substring(0, message.length() - 2);
 		}
 		else
 			message = "!Failed to query " + commandVector.elementAt(3) + " because it does not exist.";

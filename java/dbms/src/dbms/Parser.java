@@ -1,6 +1,7 @@
 package dbms;
 
 import java.util.Arrays;
+import java.util.Iterator;
 import java.util.Vector;
 import javafx.util.Pair;
 
@@ -18,20 +19,20 @@ public class Parser {
 
 		// Break up command into a array of Strings
 		commandVector = splitCommand(command);
-
+		
 		// Check for valid SQL syntax ----- For future projects
 		if (commandVector.size() == 0)
 			result = "Command was empty";
-		else if (commandVector.elementAt(0) == "CREATE")
+		else if (commandVector.elementAt(0).equals("CREATE"))
 			result = validateCreateStatement(commandVector);
-		else if (commandVector.elementAt(0) == "DROP")
+		else if (commandVector.elementAt(0).equals("DROP"))
 			result = validateDropStatement(commandVector);
-		else if (commandVector.elementAt(0) == "ALTER")
+		else if (commandVector.elementAt(0).equals("ALTER"))
 			result = validateAlterStatement(commandVector);
-		else if (commandVector.elementAt(0) == "SELECT")
+		else if (commandVector.elementAt(0).equals("SELECT"))
 			result = validateSelectStatement(commandVector);
 		else
-			result = commandVector.elementAt(0) + " is not a valid SQL command\n\n";
+			result = commandVector.elementAt(0) + " is not a valid SQL command";
 
 		return result;
 	}
@@ -43,18 +44,18 @@ public class Parser {
 		String[] commandVector = command.split(" ");
 		
 		// If a create statement with column info, format the column info
-		if (commandVector.length > 3 && commandVector[0] == "CREATE")
+		if (commandVector.length > 3 && commandVector[0].equals("CREATE"))
 		{
 			// Remove the left parentheses of column info
 			commandVector[3] = commandVector[3].substring(1);
+			
 			// Remove the last parentheses of column info
 			String tempWithComma = commandVector[commandVector.length - 1];
 			commandVector[commandVector.length - 1] = tempWithComma.substring(0, tempWithComma.length() - 1);
 
 			// Remove any commas that might be in strings
-			for (String s : commandVector)
-			{
-				s.replaceAll(",", "");
+			for (int i = 0; i < commandVector.length; i++) {
+			    commandVector[i] = commandVector[i].replaceAll(",", "");
 			}
 		}
 
