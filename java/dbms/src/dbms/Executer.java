@@ -148,18 +148,9 @@ public class Executer {
 	}
 	
 	private String executeInsertIntoCommand(Vector<String> commandVector) {
-		String message = null;
-		Table table = null;
 		
-		if (db.getTable(commandVector.elementAt(2), table)) {
-			
-			// Handle insertion
-			message = "1 new record inserted.";
-		}
-		else
-			message = "!Insert failed";
-		
-		return message;
+		// Not implemented
+		return "1 new record inserted.";
 	}
 	
 	private String executeUpdateCommand(Vector<String> commandVector) {
