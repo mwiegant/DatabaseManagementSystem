@@ -9,53 +9,68 @@ public class Executer {
 	private Database db;
 	private Parser parser;
 	
-	Executer()
-	{
+	Executer() {
 		this.parser = new Parser();
 	}
 	
-	Executer(Database db)
-	{
+	Executer(Database db) {
 		this.parser = new Parser();
 		this.db = db;
 	}
 	
-	Database getDatabase()
-	{
+	Database getDatabase() {
 		return db;
 	}
 	
-	String executeCommand(String command)
-	{
-		String result;
-		Vector<String> commandVector;
+	String executeCommand(String command) {
+		String result = null;
+		String firstCommand = null;
+		Vector<String> commandVector = new Vector<String>();
 
 		// Send command to parser to check syntax
 		result = parser.parseCommand(command);
 		commandVector = parser.splitCommand(command);
 
-		if (!result.equals("valid"))
+		// If not valid syntax, set error message
+		if (!result.equals("valid")) {
 			result = "INVALID SQL SYNTAX: " + result;
-
-		// Otherwise execute command
-		else if (commandVector.elementAt(0).equals("CREATE") && commandVector.elementAt(1).equals("TABLE"))
-			result = executeCreateTableCommand(commandVector);
-		else if (commandVector.elementAt(0).equals("DROP") && commandVector.elementAt(1).equals("TABLE"))
-			result = executeDropTableCommand(commandVector);
-		else if (commandVector.elementAt(0).equals("ALTER"))
-			result = executeAlterCommand(commandVector);
-		else if (commandVector.elementAt(0).equals("SELECT"))
-			result = executeSelectCommand(commandVector);
+			return result;
+		}
 		else
-			result = "INVALID SQL COMMAND";
+			firstCommand = commandVector.elementAt(0).toLowerCase();
+			
+		switch (firstCommand.toLowerCase()) {
+        case "create":
+        		result = executeCreateTableCommand(commandVector);
+            break;
+        case "drop":
+        		result = executeDropTableCommand(commandVector);
+        		break;
+        case "alter":
+        		result = executeAlterCommand(commandVector);
+        		break;
+        case "insert":
+        		result = executeInsertIntoCommand(commandVector);
+            break;
+        case "select":
+        		result = executeSelectCommand(commandVector);				
+            break;
+        case "update":
+        		result = executeUpdateCommand(commandVector);
+        		break;
+        case "delete":
+            result = executeDeleteCommand(commandVector);
+            break;
+        default: 
+        		result = "INVALID SQL COMMAND: " + firstCommand;		
+		}
 
 		// Pass back String message
 		return result;
 	}
-	
-	String executeCreateTableCommand(Vector<String> commandVector)
-	{
-		String message;
+
+	private String executeCreateTableCommand(Vector<String> commandVector) {
+		String message = null;
 
 		// Create table without column info
 		if (commandVector.size() < 3)
@@ -82,9 +97,8 @@ public class Executer {
 		return message;	
 	}
 
-	String executeDropTableCommand(Vector<String> commandVector)
-	{
-		String message;
+	private String executeDropTableCommand(Vector<String> commandVector)	{
+		String message = null;
 		
 		if (db.dropTable(commandVector.elementAt(2)))
 			message = "Table " + commandVector.elementAt(2) + " deleted.";
@@ -94,10 +108,8 @@ public class Executer {
 		return message;	
 	}
 
-	String executeAlterCommand(Vector<String> commandVector)
-	{
-		String message = new String();
-
+	private String executeAlterCommand(Vector<String> commandVector)	{
+		String message = null;
 		Table table = new Table();
 
 		if (commandVector.elementAt(3).equals("ADD"))
@@ -113,8 +125,7 @@ public class Executer {
 		return message;
 	}
 
-	String executeSelectCommand(Vector<String> commandVector)
-	{
+	private String executeSelectCommand(Vector<String> commandVector) {
 		String message = new String();
 		Table table = new Table();
 
@@ -134,5 +145,32 @@ public class Executer {
 			message = "!Failed to query " + commandVector.elementAt(3) + " because it does not exist.";
 
 		return message;
+	}
+	
+	private String executeInsertIntoCommand(Vector<String> commandVector) {
+		String message = null;
+		Table table = null;
+		
+		if (db.getTable(commandVector.elementAt(2), table)) {
+			
+			// Handle insertion
+			message = "1 new record inserted.";
+		}
+		else
+			message = "!Insert failed";
+		
+		return message;
+	}
+	
+	private String executeUpdateCommand(Vector<String> commandVector) {
+
+		// Not implemented
+		return "x record(s) modified";
+	}
+	
+	private String executeDeleteCommand(Vector<String> commandVector) {
+
+		// Not implemented
+		return "x record(s) deleted";
 	}
 }
