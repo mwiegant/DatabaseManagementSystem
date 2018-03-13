@@ -110,11 +110,13 @@ public class Executer {
 
 	private String executeAlterCommand(Vector<String> commandVector)	{
 		String message = null;
-		Table table = new Table();
+		Table table;
 
 		if (commandVector.elementAt(3).equals("ADD"))
 		{
-			if (db.getTable(commandVector.elementAt(2), table))
+			table = db.getTable(commandVector.elementAt(2));
+			
+			if (table != null)
 			{
 				table.createColumn(commandVector.elementAt(4), commandVector.elementAt(5));
 				message = "Table " + table.getTableName() + " modified.";
@@ -127,9 +129,9 @@ public class Executer {
 
 	private String executeSelectCommand(Vector<String> commandVector) {
 		String message = new String();
-		Table table = new Table();
+		Table table = db.getTable(commandVector.elementAt(3));
 
-		if (db.getTable(commandVector.elementAt(3), table))
+		if (table != null)
 		{
 			Map<String,String> columns;
 			columns = table.getColumns();
