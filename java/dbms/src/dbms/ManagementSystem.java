@@ -56,7 +56,9 @@ public class ManagementSystem {
 	// runs the program indefinitely, running a command at a time
 	public void RunInCommandLineMode() {
 		Scanner reader = new Scanner(System.in);
+		String command;
 		String userInput;
+		int semicolonIndex;
 
 		// exit the program if some pre-condition has caused a faulty state
 		if(exitProgram) {
@@ -69,7 +71,17 @@ public class ManagementSystem {
 		do {		
 			
 			System.out.print(" > ");
-			userInput = reader.nextLine();			
+			userInput = reader.nextLine();
+			
+			// check for a semicolon, and truncate the command at that point if there is one
+			semicolonIndex = userInput.indexOf(";");
+			
+			// if no semicolon, just append this 
+			if (semicolonIndex != -1) {
+				
+			}
+				
+				
 			processCommand(userInput);
 			
 		} while (!exitProgram);
@@ -110,6 +122,11 @@ public class ManagementSystem {
 
 		// check for an exit command
 		if (lowercaseCommand.equals(".exit") || lowercaseCommand.equals("exit")) {
+
+			// check if a database object was already loaded, and if so save it now
+			if (database != null)
+				 databasePersister.saveDatabase(buildCompleteDatabasePath(database.getDatabaseName()), database);
+			
 			System.out.println("All done.");
 			exitProgram = true;
 			return;
@@ -191,8 +208,10 @@ public class ManagementSystem {
 	{		
 		BufferedReader br = null;
 		FileReader fr = null;
+		String command = "";
 		String linedata;
 		int commentIndex = 0;
+		int semicolonIndex = 0;
 
 		try {
 			fr = new FileReader(filename);
@@ -202,12 +221,31 @@ public class ManagementSystem {
 			while ((linedata = br.readLine()) != null) {
 				commentIndex = linedata.indexOf("--");
 				
-				// grab the whole line up until the comment, if there is one
+				// if there is a comment, only grab the line up to before the comment
 				if (commentIndex != -1)
 					linedata = linedata.substring(0, commentIndex);
 				
-				if (linedata.length() > 0)				
-					commands.add(linedata);
+				// check if there is a semicolon, now that we have the actual complete command on this line
+				semicolonIndex = linedata.trim().indexOf(";");
+				
+				// if there is a semicolon, grab the command up to that point and append it to the working command
+				// NOTE: anything after the (first) semicolon is tossed out 
+				if (semicolonIndex != -1) {
+					command += linedata.substring(0, semicolonIndex);
+					commands.add(command + ";");
+					command = "";
+				}
+				// else if no semicolon, add the linedata to the working command
+				else if (linedata.length() > 0) {
+					
+					// check for .EXIT commands
+					if (linedata.toLowerCase().equals(".exit")) {
+						commands.add(linedata);
+						command = "";
+					}
+					else
+						command += linedata;				
+				}
 			}
 			
 		}
