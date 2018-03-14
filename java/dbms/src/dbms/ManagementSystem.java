@@ -119,10 +119,10 @@ public class ManagementSystem {
 		else if (lowercaseCommand.startsWith("use ")) {
 			String[] tokens = lowercaseCommand.replace(';', ' ').split(" ");
 			// load a new database, creating it or fetching it as necessary, and save the existing database
-			if (loadDatabase(tokens[2]))
-				System.out.println(String.format("Using database %1$s.", tokens[2]));
+			if (loadDatabase(tokens[1]))
+				System.out.println(String.format("Using database %1$s.", tokens[1]));
 			else
-				System.out.println(String.format("!Failed to load '%1$s' database.", tokens[2]));				
+				System.out.println(String.format("!Failed to load '%1$s' database.", tokens[1]));				
 		}
 
 		// check for a 'create database' or 'drop database' command
