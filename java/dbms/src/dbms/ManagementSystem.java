@@ -116,7 +116,7 @@ public class ManagementSystem {
 		}
 
 		// check for a 'use database' command
-		else if (lowercaseCommand.startsWith("use database")) {
+		else if (lowercaseCommand.startsWith("use ")) {
 			String[] tokens = lowercaseCommand.replace(';', ' ').split(" ");
 			// load a new database, creating it or fetching it as necessary, and save the existing database
 			if (loadDatabase(tokens[2]))
