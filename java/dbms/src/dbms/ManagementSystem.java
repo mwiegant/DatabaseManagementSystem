@@ -56,7 +56,7 @@ public class ManagementSystem {
 	// runs the program indefinitely, running a command at a time
 	public void RunInCommandLineMode() {
 		Scanner reader = new Scanner(System.in);
-		String command;
+		String command = "";
 		String userInput;
 		int semicolonIndex;
 
@@ -73,16 +73,25 @@ public class ManagementSystem {
 			System.out.print(" > ");
 			userInput = reader.nextLine();
 			
+			// check for a .EXIT command
+			if (userInput.toLowerCase().equals(".exit")) {
+				processCommand(userInput);
+			}
+			
 			// check for a semicolon, and truncate the command at that point if there is one
 			semicolonIndex = userInput.indexOf(";");
 			
-			// if no semicolon, just append this 
+			// there is a semicolon, so build the rest of the command and process it
 			if (semicolonIndex != -1) {
+				command += userInput.substring(0, semicolonIndex);
+				processCommand(command + ";");
+				command = "";
 				
+			}			
+			// else there is no semicolon, just append the user input to the working command
+			else {
+				command += userInput;
 			}
-				
-				
-			processCommand(userInput);
 			
 		} while (!exitProgram);
 		
