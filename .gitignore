@@ -4,3 +4,4 @@ build/
 db/
 old_src/
 *.o
+java/dbms/bin/dbms/*.class

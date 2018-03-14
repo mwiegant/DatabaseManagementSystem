@@ -13,18 +13,39 @@ public class Row {
 	
 	/*
 	 * Adds a new column of data into this row. Fails to add the new column if one with the same name
-	 * already exixts in this row.
+	 * already exists in this row.
 	 */
-	public boolean addData(String columnName, String columnType, Object newData) {
+	public boolean addData(String columnName, String columnType, String newData) {
 		
 		// cannot add data for a column that already has a value in this row
 		if (data.containsKey(columnName))
 			return false;
 		
-		// switch statement
+		// add the column to the data
+		switch (columnType) {
+		case "int":
+			data.put(columnName, Integer.parseInt(newData));
+			break;
+			
+		case "float":
+			data.put(columnName, Float.parseFloat(newData));
+			break;
 		
-		// TODO
+		case "varchar(20)":
+		case "char(20)":
+			data.put(columnName, newData);
+			break;
+			
+		default:
+			System.out.println("!Error - invalid datatype: " + columnType);
+		}
+		
 		return true;
 	}
 	
+	public Object getData(String columnName) {
+		if (data.containsKey(columnName))
+			return data.get(columnName);
+		return null;
+	}
 }

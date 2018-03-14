@@ -2,8 +2,11 @@ package dbms;
 
 import java.io.BufferedReader;
 import java.io.File;
+import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
+import java.io.PrintWriter;
+import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
@@ -230,52 +233,92 @@ public class DatabasePersister {
 			table.addRow(row);
 		}
 		catch (Exception e) {
-			
+			e.printStackTrace();
 		}		
 	}
 	
 	private void createDatabaseBackup(String dbCompletePath, String databaseName) {
-
+		String completePath = dbCompletePath + databaseName;
+		String backupPath = dbCompletePath + databaseName + "_old";
 	
-		
-		// dbCompletePath DOES come with the database name appended to the end of the path
-		
-		
-		
-		
-		
-		// build the path for the backup database (build a hacky solution for building the windows/unix file paths)
-		// one possibility: do a replace of the database name with 'database_name_old', in the dbCompletePath
-		
-		// rename the entire directory (https://coderanch.com/t/369445/java/Rename-directory-Java)
-		
-		// remake the old directory, File.mkdir()
-		
+		File currentDirectory = new File(completePath);
+        File backupDirectory = new File(backupPath);
+        
+        // only make a backup if the database already exists
+        if (currentDirectory.exists()) {
+        		// rename the directory, then nullify the object
+        		currentDirectory.renameTo(backupDirectory);
+        		currentDirectory = null;
+        		
+        		// re-make the old directory
+            currentDirectory = new File(backupPath);
+            currentDirectory.mkdir();
+        }
 	}
 	
-	private void saveTable(String dbPath, String tableName, Map<String, String> columns, Iterator<Row> it) {
+	private void saveTable(String dbPath, String tableName, Map<String, String> columns, Iterator<Row> it) throws FileNotFoundException, UnsupportedEncodingException {
+		CharSequence sequence = "/";
+		String pathSeperator = dbPath.contains(sequence) ? "/" : "\\";
+		String path = dbPath + pathSeperator + tableName;
+		PrintWriter writer = new PrintWriter(path, "UTF-8");
+		Set<String> columnNames = columns.keySet();
+		Iterator<String> columnIt = null;
+		boolean newLine = true;
+		String data;
+		Row row;
 		
-		
-		
-		
-		// use the dbPath and tableName to build the filepath
-		
-		// then insert the columns into the first line of the new file
-		
-		// then insert each row, one at a time
+		try {
+			// iterate through all the columns and write each column name and type to the file
+			for (String key : columnNames) {
+				if (newLine) {
+					writer.print(String.format("%1$s %2$s ", key, columns.get(key)));
+					newLine = false;
+				}
+				else
+					writer.print(String.format("| %1$s %2$s ", key, columns.get(key)));			
+			}
+			
+			// go to next line
+			writer.println();
+			newLine = true;
+			
+			// then insert each row, one at a time
+			while (it.hasNext()) {
+				row = it.next();
+				columnIt = columnNames.iterator();
+				
+				while (columnIt.hasNext()) {
+					data = (String) row.getData(columnIt.next());
+					
+					if (newLine) {
+						writer.print(String.format("%1$s ", data));
+						newLine = false;
+					}
+					else
+						writer.print(String.format("| %1$s ", data));
+				}
+				
+				writer.println();
+				newLine = true;
+			}
+			
+		}
+		catch (Exception e) {
+			e.printStackTrace();
+		}
+		finally {
+			writer.close();
+		}
+
 	}
 	
 	
 	private void deleteDatabaseBackup(String dbCompletePath, String databaseName) {
+		String backupPath = dbCompletePath + databaseName + "_old";
+		File backup = new File(backupPath);
 		
-		
-		
-		
-		
-		
-		// do a replace of the database name with 'database_name_old', in the dbCompletePath
-		
-		// .....and delete that directory (using the private recursive function deleteDirectory() )
-		
+		// only delete the backup if it exists (won't exist if this is the first time saving this database)
+		if (backup.exists())
+			deleteDirectory(backup);		
 	}
 }
