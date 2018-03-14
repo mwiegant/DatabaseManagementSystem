@@ -136,12 +136,12 @@ public class Executer {
 			Map<String,String> columns;
 			columns = table.getColumns();
 
-			for (Map.Entry<String, String> entry : columns.entrySet())
+			for (String key : columns.keySet())
 			{
-				message = message + entry.getKey() + " " + entry.getValue() + "| ";
+				message = message + key + " " + columns.get(key) + "|";
 			}
 			if (!message.isEmpty())
-				message = message.substring(0, message.length() - 2);
+				message = message.substring(0, message.length() - 1);
 		}
 		else
 			message = "!Failed to query " + commandVector.elementAt(3) + " because it does not exist.";

@@ -1,10 +1,11 @@
 package dbms;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.Iterator;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.TreeMap;
 
 public class Table {
 	private List<Row> rows;
@@ -20,7 +21,7 @@ public class Table {
 	public Table(String tableName) {
 		this.tableName = tableName;
 		rows = new ArrayList<Row>();
-		columns = new HashMap<String, String>();
+		columns = new LinkedHashMap<String, String>();
 	}
 
 	public final Row getRow() {
