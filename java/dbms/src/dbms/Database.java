@@ -34,7 +34,7 @@ public class Database {
 		tables.add(new Table(tableName));
 		return true;
 	}
-
+	
 //	public boolean createTable(string tableName, vector<pair<string, string>> columnInfo)
 //	{
 //		Table table = new Table(tableName);
@@ -128,7 +128,20 @@ public class Database {
 	
 	public boolean createTable(String name, Vector<Pair<String, String>> columnInfo)
 	{
-		// TODO
+		Table table = new Table();
+		table = this.getTable(name);
+	
+		if (table != null) {
+			return false;	
+		}
+		else {
+			this.createTable(name);
+			table = getTable(name);
+		}
+		
+		for (Pair<String, String> column : columnInfo)
+			table.createColumn(column.getKey() , column.getValue());
+		
 		return true;
 	}	
 	
