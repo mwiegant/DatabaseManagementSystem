@@ -1,5 +1,6 @@
 package dbms;
 
+import java.util.Iterator;
 import java.util.Map;
 import java.util.Vector;
 import javafx.util.Pair;
@@ -23,6 +24,7 @@ public class Executer {
 	}
 	
 	String executeCommand(String command) {
+		
 		String result = null;
 		String firstCommand = null;
 		Vector<String> commandVector = new Vector<String>();
@@ -70,6 +72,7 @@ public class Executer {
 	}
 
 	private String executeCreateTableCommand(Vector<String> commandVector) {
+		
 		String message = null;
 
 		// Create table without column info
@@ -98,6 +101,7 @@ public class Executer {
 	}
 
 	private String executeDropTableCommand(Vector<String> commandVector)	{
+		
 		String message = null;
 		
 		if (db.dropTable(commandVector.elementAt(2)))
@@ -109,6 +113,7 @@ public class Executer {
 	}
 
 	private String executeAlterCommand(Vector<String> commandVector)	{
+		
 		String message = null;
 		Table table;
 
@@ -128,20 +133,31 @@ public class Executer {
 	}
 
 	private String executeSelectCommand(Vector<String> commandVector) {
+	
 		String message = new String();
 		Table table = db.getTable(commandVector.elementAt(3));
 
-		if (table != null)
-		{
+		if (table != null && commandVector.size() == 4) {
 			Map<String,String> columns;
 			columns = table.getColumns();
 
-			for (String key : columns.keySet())
-			{
+			for (String key : columns.keySet()) {
 				message = message + key + " " + columns.get(key) + "|";
 			}
 			if (!message.isEmpty())
 				message = message.substring(0, message.length() - 1);
+			
+			Iterator<Row> it = table.getTableData();
+			while (it.hasNext()) {
+				message += "\n";
+				for (String key : columns.keySet())
+					message += it.next().getData(key) + "|";
+				message = message.substring(0, message.length() - 1);
+			}
+			
+		}
+		else if (commandVector.size() > 4) {
+			message = "Non SELECT * FROM select statements have not been implemented.";
 		}
 		else
 			message = "!Failed to query " + commandVector.elementAt(3) + " because it does not exist.";
@@ -151,19 +167,66 @@ public class Executer {
 	
 	private String executeInsertIntoCommand(Vector<String> commandVector) {
 		
-		// Not implemented
+		String[] commandArray = commandVector.toArray(new String[commandVector.size()]);
+		Table table = db.getTable(commandArray[2]);
+		Map<String, String> columns = table.getColumns();
+		int commandIndex = 4;
+		Row row = new Row();
+		
+		for (String key : columns.keySet()) {
+			row.addData(key, columns.get(key), commandArray[commandIndex]);
+			table.addRow(row);
+			commandIndex++;
+		}
+		
 		return "1 new record inserted.";
 	}
 	
 	private String executeUpdateCommand(Vector<String> commandVector) {
 
-		// Not implemented
-		return "x record(s) modified";
+		String[] commandArray = commandVector.toArray(new String[commandVector.size()]);
+		Table table = db.getTable(commandArray[1]);
+		int updateCount = 0;
+
+		if (table != null) {
+			Map<String,String> columns;
+			columns = table.getColumns();
+
+			// Look for the column that we are setting
+			if (columns.containsKey(commandArray[3])) {
+				
+				// Look for the column of the WHERE statement
+				if (columns.containsKey(commandArray[7])) {
+					
+					// Iterate through rows and update values
+					Iterator<Row> it = table.getTableData();
+					while (it.hasNext()) {
+						// If a match for the where clause
+						if (it.next().getData(commandArray[7]).equals(commandArray[9])) {
+							// Check to make sure the column exists that we are updating
+							if (it.next().getData(commandArray[3]) != null) {
+								it.next().data.put(commandArray[3], commandArray[5]);
+								updateCount++;							 	
+							}
+						}
+					}		
+				}
+			}			
+		}
+		else
+			return "Table " + commandArray[1] + " does not exist.";
+		
+		if (updateCount == 1)
+			return "1 record modified.";
+		if (updateCount > 1)
+			return updateCount + " records modified";
+					
+		return "0 records modified.";
 	}
 	
 	private String executeDeleteCommand(Vector<String> commandVector) {
-
-		// Not implemented
-		return "x record(s) deleted";
+					
+		return "Record deletion not implemented.";
 	}
+	
 }

@@ -8,7 +8,7 @@ import java.util.Map;
 import java.util.TreeMap;
 
 public class Table {
-	private List<Row> rows;
+	private List<Row > rows;
 	private String tableName;
 	private Map<String, String> columns;
 	
