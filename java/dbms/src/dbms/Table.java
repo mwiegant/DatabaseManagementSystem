@@ -45,16 +45,6 @@ public class Table {
 		return tableName;
 	}
 	
-//	public final Table1 copyFrom (Table1 other)
-//	{
-//		if (this != other)
-//		{
-//			columns.copyFrom(other.getColumns());
-//			TableName = other.TableName;
-//		}
-//	return this;
-//	}
-	
 	public final Map<String, String> getColumns()
 	{
 		return columns;
@@ -89,5 +79,13 @@ public class Table {
 	
 	public void addRow(Row row) {
 		rows.add(row);
+	}
+	
+	public void setTableData(Iterable<Row> data) {
+		rows.clear();
+		
+		for (Row row : data) {
+			rows.add(row);
+		}
 	}
 }
