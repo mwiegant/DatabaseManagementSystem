@@ -31,6 +31,9 @@ public class Executer {
 		String firstCommand = null;
 		Vector<String> commandVector = new Vector<String>();
 		List<Criteria> criteria = null;
+		List<Row> matchingRows = new ArrayList<Row>();
+		List<Row> otherRows = new ArrayList<Row>();
+		Table table = null;
 
 		// Send command to parser to check syntax
 		result = parser.parseCommand(command);
@@ -46,6 +49,22 @@ public class Executer {
 			
 		// Get selection criteria
 		criteria = parseSelectionCriteria(commandVector);
+		
+		if (criteria != null && !criteria.isEmpty()) {
+			String tableName = extractTableName(commandVector);
+			if (tableName != null) {
+				table = db.getTable(tableName);
+				// Loop through rows and separate them into criteria matches non matches
+				Iterator<Row> it = table.getTableData();
+				while (it.hasNext()) {
+					Row currentRow = it.next();
+					if (this.matchesCriteria(currentRow, criteria)) 
+						matchingRows.add(currentRow);
+					else
+						otherRows.add(currentRow);
+				}
+			}
+		}
 		
 		switch (firstCommand.toLowerCase()) {
         case "create":
@@ -290,5 +309,44 @@ public class Executer {
 		return criteriaList;
 	}
 	
+	private boolean matchesCriteria(Row row, List<Criteria> criteriaList) {
+		
+		for (Criteria criteria : criteriaList) {
+			switch (criteria.operator) {
+			case "=" : 
+				return row.getData(criteria.colName).equals(criteria.value);
+			
+			case "!=" : 
+				return !row.getData(criteria.colName).equals(criteria.value);
+				
+			case ">" : 
+				return (Float.parseFloat(row.getData(criteria.colName).toString()) > Float.parseFloat(criteria.value));
+				
+			case "<" : 
+				return (Float.parseFloat(row.getData(criteria.colName).toString()) < Float.parseFloat(criteria.value));
+				
+			case ">=" : 
+				return (Float.parseFloat(row.getData(criteria.colName).toString()) >= Float.parseFloat(criteria.value));
+				
+			case "<=" : 
+				return (Float.parseFloat(row.getData(criteria.colName).toString()) <= Float.parseFloat(criteria.value));	
+			
+			default :
+				break;
+			}
+			
+		}
+		return false;
+	}
+	
+	private String extractTableName(Vector<String> commandVector) {
+		String[] commandArray = commandVector.toArray(new String[commandVector.size()]);
+		
+		for (int i = 0; i < commandArray.length; i++) {
+			if (commandArray[i].toLowerCase().equals("from") || commandArray[i].toLowerCase().equals("update"))
+				return commandArray[i+1];
+		}
+		return null;
+	}
 	
 }
