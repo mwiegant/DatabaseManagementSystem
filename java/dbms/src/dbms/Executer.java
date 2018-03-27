@@ -1,6 +1,8 @@
 package dbms;
 
+import java.util.ArrayList;
 import java.util.Iterator;
+import java.util.List;
 import java.util.Map;
 import java.util.Vector;
 import javafx.util.Pair;
@@ -28,6 +30,7 @@ public class Executer {
 		String result = null;
 		String firstCommand = null;
 		Vector<String> commandVector = new Vector<String>();
+		List<Criteria> criteria = null;
 
 		// Send command to parser to check syntax
 		result = parser.parseCommand(command);
@@ -41,6 +44,9 @@ public class Executer {
 		else
 			firstCommand = commandVector.elementAt(0).toLowerCase();
 			
+		// Get selection criteria
+		criteria = parseSelectionCriteria(commandVector);
+		
 		switch (firstCommand.toLowerCase()) {
         case "create":
         		result = executeCreateTableCommand(commandVector);
@@ -201,14 +207,46 @@ public class Executer {
 					// Iterate through rows and update values
 					Iterator<Row> it = table.getTableData();
 					while (it.hasNext()) {
+						
 						// If a match for the where clause
-						if (it.next().getData(commandArray[7]).equals(commandArray[9])) {
-							// Check to make sure the column exists that we are updating
-							if (it.next().getData(commandArray[3]) != null) {
-								it.next().data.put(commandArray[3], commandArray[5]);
-								updateCount++;							 	
+						switch (commandArray[8]) { 
+						case "=" : {
+							if (it.next().getData(commandArray[7]).equals(commandArray[9])) {
+								// Check to make sure the column exists that we are updating
+								if (it.next().getData(commandArray[3]) != null) {
+									it.next().data.put(commandArray[3], commandArray[5]);
+									updateCount++;							 	
+								}
 							}
 						}
+						break;
+						
+						case ">" : {
+							// Convert to int and compare
+							if (it.next().getData(commandArray[7]).equals(commandArray[9])) {
+								// Check to make sure the column exists that we are updating
+								if (it.next().getData(commandArray[3]) != null) {
+									it.next().data.put(commandArray[3], commandArray[5]);
+									updateCount++;							 	
+								}
+							}
+						}
+						break;
+						
+						case "<" : {
+							// Convert to int and compare
+							if (it.next().getData(commandArray[7]).equals(commandArray[9])) {
+								// Check to make sure the column exists that we are updating
+								if (it.next().getData(commandArray[3]) != null) {
+									it.next().data.put(commandArray[3], commandArray[5]);
+									updateCount++;							 	
+								}
+							}
+						}
+						default:
+							
+						}
+						
 					}		
 				}
 			}			
@@ -228,5 +266,29 @@ public class Executer {
 					
 		return "Record deletion not implemented.";
 	}
+	
+	private List<Criteria> parseSelectionCriteria(Vector<String> commandVector) {
+		
+		List<Criteria> criteriaList = new ArrayList<Criteria>();
+		String[] commandArray = commandVector.toArray(new String[commandVector.size()]);
+		
+		if (commandArray.length > 5) {
+			for (int i = 0; i < commandArray.length; i++) {
+				if (commandArray[i].equals("where")) {
+					criteriaList.add(new Criteria(commandArray[i+1], commandArray[i+3], commandArray[i+2]));
+					if (i + 5 <= commandArray.length)
+						i += 4;
+					while (commandArray[i].equals("and")) {
+						criteriaList.add(new Criteria(commandArray[i+1], commandArray[i+3], commandArray[i+2]));
+						if (i + 5 <= commandArray.length)
+							i += 4;
+					}
+				}
+			}
+		}
+		
+		return criteriaList;
+	}
+	
 	
 }
