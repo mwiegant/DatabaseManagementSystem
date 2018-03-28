@@ -80,13 +80,13 @@ public class Executer {
         		result = executeInsertIntoCommand(commandVector);
             break;
         case "select":
-        		result = executeSelectCommand(commandVector);				
+        		result = executeSelectCommand(matchingRows, otherRows, commandVector);				
             break;
         case "update":
         		result = executeUpdateCommand(commandVector);
         		break;
         case "delete":
-            result = executeDeleteCommand(commandVector);
+            result = executeDeleteCommand(matchingRows, otherRows, commandVector);
             break;
         default: 
         		result = "INVALID SQL COMMAND: " + firstCommand;		
@@ -157,10 +157,10 @@ public class Executer {
 		return message;
 	}
 
-	private String executeSelectCommand(Vector<String> commandVector) {
+	private String executeSelectCommand(List<Row> matchingRows, List<Row> otherRows, Vector<String> commandVector) {
 	
 		String message = new String();
-		Table table = db.getTable(commandVector.elementAt(3));
+		Table table = db.getTable(extractTableName(commandVector));
 
 		if (table != null && commandVector.size() == 4) {
 			Map<String,String> columns;
@@ -181,8 +181,23 @@ public class Executer {
 			}
 			
 		}
-		else if (commandVector.size() > 4) {
-			message = "Non SELECT * FROM select statements have not been implemented.";
+		else if (table != null && commandVector.size() > 4) {
+			Map<String,String> columns;
+			columns = table.getColumns();
+
+			for (int headerIndex = 1; !commandVector.elementAt(headerIndex).equals("from"); headerIndex++) {
+				message = message + commandVector.elementAt(headerIndex) + " " + columns.get(commandVector.elementAt(headerIndex)) + "|";
+			}
+			if (!message.isEmpty())
+				message = message.substring(0, message.length() - 1);
+			
+			for (int i = 0; i < matchingRows.size()/3; i++) { 
+
+				message += "\n";
+				for (int headerIndex = 1; !commandVector.elementAt(headerIndex).equals("from"); headerIndex++)
+					message += matchingRows.get(i).getData(commandVector.elementAt(headerIndex)) + "|";
+				message = message.substring(0, message.length() - 1);
+			}
 		}
 		else
 			message = "!Failed to query " + commandVector.elementAt(3) + " because it does not exist.";
@@ -281,9 +296,16 @@ public class Executer {
 		return "0 records modified.";
 	}
 	
-	private String executeDeleteCommand(Vector<String> commandVector) {
-					
-		return "Record deletion not implemented.";
+	private String executeDeleteCommand(List<Row> matchingRows, List<Row> otherRows, Vector<String> commandVector) {
+		
+		Table table = db.getTable(extractTableName(commandVector));
+		table.setTableData(otherRows);
+		
+		// Have to divide by three because for some reason it adds a bunch of null values
+		if (matchingRows.size()/3 == 1)
+			return "1 record deleted.";
+		
+		return matchingRows.size()/3 + " records deleted.";
 	}
 	
 	private List<Criteria> parseSelectionCriteria(Vector<String> commandVector) {
@@ -317,7 +339,7 @@ public class Executer {
 				return row.getData(criteria.colName).equals(criteria.value);
 			
 			case "!=" : 
-				return !row.getData(criteria.colName).equals(criteria.value);
+				return !row.getData(criteria.colName).toString().equals(criteria.value);
 				
 			case ">" : 
 				return (Float.parseFloat(row.getData(criteria.colName).toString()) > Float.parseFloat(criteria.value));
