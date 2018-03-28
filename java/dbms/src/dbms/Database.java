@@ -25,6 +25,7 @@ public class Database {
 	public boolean createTable(String tableName)
 	{
 		Iterator<Table> it = tables.iterator();
+		tableName = tableName.toLowerCase();
 		
 		while (it.hasNext()) {
 			if (it.next().getTableName().equals(tableName))
@@ -61,6 +62,7 @@ public class Database {
 	public Table getTable(String tableName) {
 		Iterator<Table> it = tables.iterator();
 		Table table = null;
+		tableName = tableName.toLowerCase();
 		
 		while (it.hasNext()) {
 			table = it.next();
@@ -75,6 +77,7 @@ public class Database {
 	public boolean dropTable(String tableName) {
 		Iterator<Table> it = tables.iterator();
 		Table table = null;
+		tableName = tableName.toLowerCase();
 		
 		while (it.hasNext()) {
 			table = it.next();
