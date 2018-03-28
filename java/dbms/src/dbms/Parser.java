@@ -129,6 +129,8 @@ public class Parser {
 		// Remove any commas from the command vector components
 		for (int i = 0; i < commandArray.length; i++) {
 			commandArray[i] = commandArray[i].replaceAll(",", "");
+			commandArray[i] = commandArray[i].replaceAll("'", "");
+			commandArray[i] = commandArray[i].replaceAll("\"", "");
 		}
 		
 		return commandArray;
@@ -168,6 +170,8 @@ public class Parser {
 		// Trim away spaces and tabs from data components
 		for (int i = 0; i < dataComponents.length; i++) {
 			dataComponents[i] = dataComponents[i].trim();
+			dataComponents[i] = dataComponents[i].replaceAll("'", "");
+			dataComponents[i] = dataComponents[i].replaceAll("\"", "");
 		}
 		
 		// Add the data components to command vector
@@ -184,6 +188,11 @@ public class Parser {
 		command = removeSemicolonAtEnd(command);
 		String[] commandArray = command.split(" ");
 		
+		for (int i = 0; i < commandArray.length; i++) {
+			commandArray[i] = commandArray[i].replaceAll("'", "");
+			commandArray[i] = commandArray[i].replaceAll("\"", "");
+		}
+		
 		return commandArray;
 	}
 	
@@ -191,6 +200,11 @@ public class Parser {
 		
 		command = removeSemicolonAtEnd(command);
 		String[] commandArray = command.split(" ");
+		
+		for (int i = 0; i < commandArray.length; i++) {
+			commandArray[i] = commandArray[i].replaceAll("'", "");
+			commandArray[i] = commandArray[i].replaceAll("\"", "");
+		}
 		
 		return commandArray;
 	}
