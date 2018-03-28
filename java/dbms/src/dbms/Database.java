@@ -147,7 +147,6 @@ public class Database {
 	
 	
 	public String getName() {
-		// TODO
-		return "";
+		return databaseName;
 	}
 }

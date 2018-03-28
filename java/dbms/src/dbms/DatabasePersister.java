@@ -47,7 +47,7 @@ public class DatabasePersister {
 		
 		try {	
 			// make a backup of the database folder, and recreate the new folder
-			createDatabaseBackup(dbCompletePath, database.getName());
+			createDatabaseBackup(dbCompletePath);
 			
 			// iterate through table names, grabbing one table at a time		
 			for (String tableName : tableNames) {
@@ -237,9 +237,9 @@ public class DatabasePersister {
 		}		
 	}
 	
-	private void createDatabaseBackup(String dbCompletePath, String databaseName) {
-		String completePath = dbCompletePath + databaseName;
-		String backupPath = dbCompletePath + databaseName + "_old";
+	private void createDatabaseBackup(String dbCompletePath) {
+		String completePath = dbCompletePath;
+		String backupPath = dbCompletePath + "_old";
 	
 		File currentDirectory = new File(completePath);
         File backupDirectory = new File(backupPath);
@@ -257,9 +257,8 @@ public class DatabasePersister {
 	}
 	
 	private void saveTable(String dbPath, String tableName, Map<String, String> columns, Iterator<Row> it) throws FileNotFoundException, UnsupportedEncodingException {
-		CharSequence sequence = "/";
-		String pathSeperator = dbPath.contains(sequence) ? "/" : "\\";
-		String path = dbPath + pathSeperator + tableName;
+	
+		String path = dbPath + tableName;
 		PrintWriter writer = new PrintWriter(path, "UTF-8");
 		Set<String> columnNames = columns.keySet();
 		Iterator<String> columnIt = null;

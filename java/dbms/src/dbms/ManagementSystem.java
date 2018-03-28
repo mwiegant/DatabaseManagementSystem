@@ -286,7 +286,7 @@ public class ManagementSystem {
 	 */
 	private boolean cacheDatabaseNames() {
 		try {
-			File dbFolder = new File(workingDirectory);
+			File dbFolder = new File(buildDatabaseFolderPath(workingDirectory));
 			
 			if (dbFolder.exists()) {
 				File[] listOfFiles = dbFolder.listFiles();
@@ -318,6 +318,13 @@ public class ManagementSystem {
 		String unixString = "%1$s/db/%2$s/";
 		String windowsString = "%1$s\\db\\%2$s\\";		
 		return buildPath(unixString, windowsString, dbName);
+	}
+	
+	//builds db folder, in a platform-independant way
+	private String buildDatabaseFolderPath(String workingDir) {
+		String unixString = "%1$s/db";
+		String windowsString = "%1$s\\db";		
+		return buildPath(unixString, windowsString, workingDir);
 	}
 	
 	
