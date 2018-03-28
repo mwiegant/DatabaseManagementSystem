@@ -44,8 +44,18 @@ public class Row {
 	}
 	
 	public Object getData(String columnName) {
-		if (data.containsKey(columnName))
-			return data.get(columnName);
+		Object rowData;
+		
+		if (data.containsKey(columnName)) {
+			rowData = data.get(columnName);
+			
+			if (rowData instanceof String)
+				return rowData;
+			if (rowData instanceof Integer)
+				return ((Integer) rowData).toString();
+			if (rowData instanceof Float)
+				return ((Float) rowData).toString();
+		}
 		return null;
 	}
 }

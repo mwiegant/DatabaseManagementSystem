@@ -1,0 +1,13 @@
+#############################################################################
+# Brilliant solution that allows you to run a jarfile as if it were an exe  #
+#                                                                           #
+# Max Wiegant                                       ~  Make Peace, Not Bugs #
+#############################################################################
+
+#
+# $1 contains the value of the argument passed in after the executable, if there is one
+#
+# Note that the bash command below still works even if $1 evaluates to <null> or some other default value
+#
+
+java -jar dbms.jar $1

@@ -153,7 +153,7 @@ public class DatabasePersister {
 		boolean firstLine = true;
 		
 		try {
-			fr = new FileReader(dbCompletePath);
+			fr = new FileReader(dbCompletePath + tableName);
 			br = new BufferedReader(fr);
 			
 			while ((linedata = br.readLine()) != null) {
@@ -192,11 +192,14 @@ public class DatabasePersister {
 	 * Given the table object, and the string representing its columns, loads the columns into the Table.
 	 */
 	private Map<String, String> loadTableColumns(Table table, String tableColumnLine) {
-		String[] columnTokens = tableColumnLine.split("|");
+		String[] columnTokens = tableColumnLine.split("\\|");
 		Map<String, String> columns = new HashMap<String, String>();
 		
 		for (String column : columnTokens) {
-			String[] tokens = column.split(" ");	// col_name col_type
+			String[] tokens = column.trim().split(" ");	// col_name col_type
+			
+			if (tokens.length == 0)
+				break;
 			
 			// check if the column type is a supported one, before adding it to the table
 			if (supportedColumnTypes.contains(tokens[1])) {

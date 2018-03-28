@@ -4,7 +4,7 @@ package dbms;
 
 public class DBMS {
 
-	private static final String DEFAULT_WDIR = "../db";
+	private static final String DEFAULT_WDIR = System.getProperty("user.dir");
 	private static final String DEFAULT_ARCH = "unix";
 	private static String wdir = null;
 	private static String arch = null;
