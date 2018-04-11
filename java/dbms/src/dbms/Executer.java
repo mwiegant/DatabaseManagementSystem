@@ -1,6 +1,7 @@
 package dbms;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
@@ -31,9 +32,11 @@ public class Executer {
 		String firstCommand = null;
 		Vector<String> commandVector = new Vector<String>();
 		List<Criteria> criteria = null;
+		List<JoinCriteria> joinCriteria = null;
 		List<Row> matchingRows = new ArrayList<Row>();
 		List<Row> otherRows = new ArrayList<Row>();
 		Table table = null;
+		boolean isJoinQuery = false;
 
 		// Send command to parser to check syntax
 		result = parser.parseCommand(command);
@@ -46,9 +49,16 @@ public class Executer {
 		}
 		else
 			firstCommand = commandVector.elementAt(0).toLowerCase();
-			
-		// Get selection criteria
-		criteria = parseSelectionCriteria(commandVector);
+		
+		
+		// parse join or selection criteria
+		isJoinQuery = isJoinQuery(commandVector);
+		
+		if (isJoinQuery)
+			joinCriteria = parseJoinSelectionCriteria(commandVector);
+		else
+			criteria = parseSelectionCriteria(commandVector);
+		
 		
 		if (criteria != null && !criteria.isEmpty()) {
 			String tableName = extractTableName(commandVector);
@@ -66,6 +76,11 @@ public class Executer {
 			}
 		}
 		
+		
+		if (joinCriteria != null && !joinCriteria.isEmpty()) {
+			
+		}
+		
 		switch (firstCommand.toLowerCase()) {
         case "create":
         		result = executeCreateTableCommand(commandVector);
@@ -80,7 +95,11 @@ public class Executer {
         		result = executeInsertIntoCommand(commandVector);
             break;
         case "select":
-        		result = executeSelectCommand(matchingRows, otherRows, commandVector);				
+        		if (isJoinQuery)
+//        			result = executeJoinSelectCommand(commandVector);
+        			break;
+        		else
+        			result = executeSelectCommand(matchingRows, otherRows, commandVector);				
             break;
         case "update":
         		result = executeUpdateCommand(commandVector);
@@ -162,7 +181,7 @@ public class Executer {
 		String message = new String();
 		Table table = db.getTable(extractTableName(commandVector));
 
-		
+		// SELECT * FROM table_name
 		if (table != null && commandVector.size() == 4) {
 			Map<String,String> columns;
 			columns = table.getColumns();
@@ -182,7 +201,7 @@ public class Executer {
 			}
 			
 		}
-		// If more complicated then select * from table
+		// If more complicated than select * from table
 		else if (table != null && commandVector.size() > 4) {
 			// Get the columns for the table
 			Map<String,String> columns;
@@ -336,6 +355,113 @@ public class Executer {
 		return criteriaList;
 	}
 	
+	
+	private List<JoinCriteria> parseJoinSelectionCriteria(Vector<String> commandVector) {
+		Iterator<String> tokens = commandVector.iterator();
+		List<String> tableNameTokens = new ArrayList<String>(); 
+		List<JoinCriteria> allJoinCriteria = new ArrayList<JoinCriteria>();
+		Map<String, String> tableNames;
+		JoinCriteria joinCriteria = new JoinCriteria();
+		String token;
+		String[] splitTokens;
+		int index = 1;
+		
+		// iterate until we hit the from statement
+		while (tokens.hasNext()) {
+			if (tokens.next().equals("from"))
+				break;
+		}
+		
+		// parse table name aliases and join type
+		tableNames = parseTableNamesAndJoinType(tokens, tableNameTokens);
+		
+		// parse table selection criteria
+		while (tokens.hasNext()) {
+			token = tokens.next();
+			
+			switch(index) {
+			case 1:
+				joinCriteria = new JoinCriteria();
+				splitTokens = token.split(".");
+				
+				joinCriteria.leftTableName = tableNames.get(splitTokens[0]);
+				joinCriteria.leftColumnName = splitTokens[1];
+				break;
+			case 2:
+				// do nothing, we assume equality for table joins
+			case 3:
+				splitTokens = token.split(".");
+				
+				joinCriteria.rightTableName = tableNames.get(splitTokens[0]);
+				joinCriteria.rightColumnName = splitTokens[1];
+				allJoinCriteria.add(joinCriteria);
+				break;
+			}
+			
+			// this is my way of keeping track of where I am in "condition = condition" (3 seperate tokens)
+			index = index == 3 ? index = 1 : index++;
+		}
+				
+		return new ArrayList<JoinCriteria>();
+	}
+	
+	private Map<String, String> parseTableNamesAndJoinType(Iterator<String> iter, List<String> tableNameTokens) {
+		Map<String, String> map = new HashMap<String, String>();
+		String tableNameOne, tableAliasOne, tableNameTwo, tableAliasTwo, token;
+		String joinType = "";
+		String defaultJoinType = "inner_join";
+		int index;
+		
+		// grab all tokens between FROM and WHERE / ON
+		while(iter.hasNext()) {
+			token = iter.next();
+			
+			if (token.equals("where") || token.equals("on"))
+				break;
+			else
+				tableNameTokens.add(token);
+		}
+				
+		// case where only the table names are present, with an implied inner join
+		if (tableNameTokens.size() == 4) {
+			tableNameOne = tableNameTokens.get(0);
+			tableAliasOne = tableNameTokens.get(1);
+			tableNameTwo = tableNameTokens.get(2);
+			tableAliasTwo = tableNameTokens.get(3);
+			joinType = defaultJoinType;
+		}
+		// case where the join type is several words that exist between the two table names
+		else {
+			tableNameOne = tableNameTokens.get(0);
+			tableAliasOne = tableNameTokens.get(1);
+			
+			// increment through list until "join" is reached			
+			index = 2;
+			while (!tableNameTokens.get(index).equals("join")) {
+				if (joinType.length() == 0)
+					joinType = tableNameTokens.get(index);
+				else
+					joinType += "_" + tableNameTokens.get(index);
+				
+				index++;
+			}
+			
+			// add "join" to the joinType
+			joinType += "_" + tableNameTokens.get(index);
+			index++;
+			
+			tableNameTwo = tableNameTokens.get(index);
+			index++;
+			tableAliasTwo = tableNameTokens.get(index);
+		}
+		
+		map.put(tableAliasOne, tableNameOne);
+		map.put(tableAliasTwo, tableNameTwo);
+		map.put("joinType", joinType);
+				
+		return map;
+	}
+	
 	private boolean matchesCriteria(Row row, List<Criteria> criteriaList) {
 		
 		for (Criteria criteria : criteriaList) {
@@ -375,5 +501,15 @@ public class Executer {
 		}
 		return null;
 	}
+	
+	private boolean isJoinQuery(Vector<String> commandVector) {
+		Iterator<String> tokens = commandVector.iterator();
+		
+		while(tokens.hasNext())
+			if (tokens.next().contains("."))
+				return true;	
+		return false;
+	}
+	
 	
 }
