@@ -162,6 +162,7 @@ public class Executer {
 		String message = new String();
 		Table table = db.getTable(extractTableName(commandVector));
 
+		
 		if (table != null && commandVector.size() == 4) {
 			Map<String,String> columns;
 			columns = table.getColumns();
@@ -181,19 +182,23 @@ public class Executer {
 			}
 			
 		}
+		// If more complicated then select * from table
 		else if (table != null && commandVector.size() > 4) {
+			// Get the columns for the table
 			Map<String,String> columns;
 			columns = table.getColumns();
 
+			// Add headers of table to message
 			for (int headerIndex = 1; !commandVector.elementAt(headerIndex).equals("from"); headerIndex++) {
 				message = message + commandVector.elementAt(headerIndex) + " " + columns.get(commandVector.elementAt(headerIndex)) + "|";
 			}
 			if (!message.isEmpty())
 				message = message.substring(0, message.length() - 1);
 			
+			// Loop through rows
 			for (int i = 0; i < matchingRows.size()/3; i++) { 
-
 				message += "\n";
+				// Loop through the data of the row and add it to message
 				for (int headerIndex = 1; !commandVector.elementAt(headerIndex).equals("from"); headerIndex++)
 					message += matchingRows.get(i).getData(commandVector.elementAt(headerIndex)) + "|";
 				message = message.substring(0, message.length() - 1);
