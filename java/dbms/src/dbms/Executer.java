@@ -382,27 +382,29 @@ public class Executer {
 			switch(index) {
 			case 1:
 				joinCriteria = new JoinCriteria();
-				splitTokens = token.split(".");
+				splitTokens = token.split("\\.");
 				
 				joinCriteria.leftTableName = tableNames.get(splitTokens[0]);
 				joinCriteria.leftColumnName = splitTokens[1];
 				break;
 			case 2:
 				// do nothing, we assume equality for table joins
+				break;
 			case 3:
-				splitTokens = token.split(".");
+				splitTokens = token.split("\\.");
 				
 				joinCriteria.rightTableName = tableNames.get(splitTokens[0]);
 				joinCriteria.rightColumnName = splitTokens[1];
+				joinCriteria.joinType = tableNames.get("joinType");
 				allJoinCriteria.add(joinCriteria);
 				break;
 			}
 			
 			// this is my way of keeping track of where I am in "condition = condition" (3 seperate tokens)
-			index = index == 3 ? index = 1 : index++;
+			index = (index == 3) ? 1 : index + 1;
 		}
-				
-		return new ArrayList<JoinCriteria>();
+
+		return allJoinCriteria;
 	}
 	
 	private Map<String, String> parseTableNamesAndJoinType(Iterator<String> iter, List<String> tableNameTokens) {
