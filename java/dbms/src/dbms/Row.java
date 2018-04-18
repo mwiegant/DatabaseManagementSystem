@@ -17,6 +17,9 @@ public class Row {
 	 */
 	public boolean addData(String columnName, String columnType, String newData) {
 		
+		// trim incoming data, to account for trailing spaces
+		newData = newData.trim();
+		
 		// cannot add data for a column that already has a value in this row
 		if (data.containsKey(columnName))
 			return false;

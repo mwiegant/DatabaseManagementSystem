@@ -5,6 +5,7 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.Vector;
 import javafx.util.Pair;
 
@@ -35,6 +36,7 @@ public class Executer {
 		List<JoinCriteria> joinCriteria = null;
 		List<Row> matchingRows = new ArrayList<Row>();
 		List<Row> otherRows = new ArrayList<Row>();
+
 		Table table = null;
 		boolean isJoinQuery = false;
 
@@ -95,10 +97,9 @@ public class Executer {
         		result = executeInsertIntoCommand(commandVector);
             break;
         case "select":
-        		if (isJoinQuery)
-//        			result = executeJoinSelectCommand(commandVector);
-        			break;
-        		else
+        		if (isJoinQuery) {
+        			result = executeJoinSelectCommand(joinCriteria, commandVector);        		
+        		} else
         			result = executeSelectCommand(matchingRows, otherRows, commandVector);				
             break;
         case "update":
@@ -238,11 +239,11 @@ public class Executer {
 		Row row = new Row();
 		
 		for (String key : columns.keySet()) {
-			row.addData(key, columns.get(key), commandArray[commandIndex]);
-			table.addRow(row);
+			row.addData(key, columns.get(key), commandArray[commandIndex]);			
 			commandIndex++;
 		}
 		
+		table.addRow(row);		
 		return "1 new record inserted.";
 	}
 	
@@ -332,6 +333,212 @@ public class Executer {
 		return matchingRows.size()/3 + " records deleted.";
 	}
 	
+	private String executeJoinSelectCommand(List<JoinCriteria> joinCriteria, Vector<String> commandVector) {
+		// I am assuming only one join criteria, although this code could be expanded to support multiple join criteria
+		String joinType = joinCriteria.get(0).joinType; 
+		String leftTableName = joinCriteria.get(0).leftTableName;
+		String leftColumnName = joinCriteria.get(0).leftColumnName;
+		String rightTableName = joinCriteria.get(0).rightTableName;
+		String rightColumnName = joinCriteria.get(0).rightColumnName;
+		Table leftTable = db.getTable(leftTableName);
+		Table rightTable = db.getTable(rightTableName);
+		
+		switch (joinType) {
+		case "inner_join":
+			executeInnerJoin(leftTable, rightTable, leftColumnName, rightColumnName);
+			break;
+		case "left_outer_join":
+			executeLeftOuterJoin(leftTable, rightTable, leftColumnName, rightColumnName);
+			break;	
+		default:
+			return "Invalid joinType: " + joinType;
+		}
+		
+		return "";
+	}
+
+	
+	private String executeInnerJoin(Table leftTable, Table rightTable, String leftColumn, String rightColumn) {
+		String columnType = leftTable.getColumns().get(leftColumn); // column types should be the same
+		Set<String> leftColumns = leftTable.getColumns().keySet();
+		Set<String> rightColumns = rightTable.getColumns().keySet();		
+
+		Iterator<Row> leftRowIt = leftTable.getTableData();
+		Iterator<Row> rightRowIt = null;
+		boolean firstOutput = true;
+		Row leftRow;
+		Row rightRow;
+		
+		// for each row in leftTable
+		while (leftRowIt.hasNext()) {
+			leftRow = leftRowIt.next();			
+			rightRowIt = rightTable.getTableData();
+			
+			while (rightRowIt.hasNext()) {
+				rightRow = rightRowIt.next();
+				
+				if (firstOutput) {
+					printColumns(leftColumns, rightColumns);
+					firstOutput = false;
+				}
+				
+				// inner join, only print the data if both sides of the join have the same value
+				if (areEqual(columnType, leftRow.getData(leftColumn), rightRow.getData(rightColumn))) {	
+					printJoinedRow(leftColumns, rightColumns, leftRow, rightRow);
+				}
+			}
+		}		
+		
+		return "";
+	}
+	
+	
+	private String executeLeftOuterJoin(Table leftTable, Table rightTable, String leftColumn, String rightColumn) {
+		String columnType = leftTable.getColumns().get(leftColumn); // column types should be the same
+		Set<String> leftColumns = leftTable.getColumns().keySet();
+		Set<String> rightColumns = rightTable.getColumns().keySet();		
+
+		Iterator<Row> leftRowIt = leftTable.getTableData();
+		Iterator<Row> rightRowIt = null;
+		boolean firstOutput = true;
+		boolean matched;
+		Row leftRow;
+		Row rightRow;
+		
+		// for each row in leftTable
+		while (leftRowIt.hasNext()) {
+			leftRow = leftRowIt.next();			
+			rightRowIt = rightTable.getTableData();
+			matched = false;
+			
+			// first output, print columns
+			if (firstOutput) {
+				printColumns(leftColumns, rightColumns);
+				firstOutput = false;
+			}
+			
+			while (rightRowIt.hasNext()) {
+				rightRow = rightRowIt.next();
+								
+				// print data from both sides of the join if the data is equal
+				if (areEqual(columnType, leftRow.getData(leftColumn), rightRow.getData(rightColumn))) {
+					printJoinedRow(leftColumns, rightColumns, leftRow, rightRow);
+					matched = true;
+				}
+			}
+			
+			// if the data from the left side of the join never matched with data from the right side,
+			// just print the data from the left side by itself
+			if (matched == false)
+				printJoinedRow(leftColumns, rightColumns, leftRow, null);
+		}		
+		
+		return "";
+	}
+	
+	/*
+	 * a "one-size-fits-all" equality checking function, for checking values for table joins
+	 * 
+	 * @param dataType - the type of this data (int, float, char(20), etc)
+	 */
+	private boolean areEqual(String dataType, Object leftObject, Object rightObject) {		
+		// null pointer exceptions may be thrown. In that case, just return false
+		try {
+		
+			switch (dataType) {
+			case "int":
+				return Integer.valueOf((String) leftObject) == Integer.valueOf((String) rightObject);
+	
+			case "float":
+				return Float.valueOf((String) leftObject) == Float.valueOf((String) rightObject); 
+				
+			case "varchar(20)":
+			case "char(20)":
+				return ((String) leftObject).equals((String) rightObject);
+				
+			default:
+				System.out.println("!Error - invalid column type: " + dataType);
+				return false;
+			}
+		} catch (Exception e) {
+			return false;
+		}
+	}
+	
+	/*
+	 * For table joins, prints the columns. Meant to be called prior to printJoinedRow().
+	 */
+	private void printColumns(Set<String> leftColumns, Set<String> rightColumns) {
+		boolean firstColumn = true;
+		
+		for (String column : leftColumns) {
+			if (firstColumn) {
+				System.out.print(column);
+				firstColumn = false;
+			}
+			else
+				System.out.print("|" + column);
+		}
+		
+		for (String column : rightColumns)
+			System.out.print("|" + column);
+		
+		System.out.print("\n");
+	}
+	
+	/*
+	 * Prints the data from two rows, in an inner join
+	 */
+	private void printJoinedRow(Set<String> leftColumns, Set<String> rightColumns, Row _leftRow, Row _rightRow) {
+		boolean firstColumn = true;
+		Row leftRow, rightRow;
+		
+		// if either row is null, initialize it but expect that data from that row will be null
+		if (_leftRow == null)
+			leftRow = new Row();
+		else
+			leftRow = _leftRow;
+		
+		if (_rightRow == null)
+			rightRow = new Row();
+		else
+			rightRow = _rightRow;
+		
+		
+		// print data from left row
+		for (String column : leftColumns) {
+			if (firstColumn) {
+				firstColumn = false;
+				
+				if (leftRow.getData(column) == null)
+					System.out.print("");
+				else
+					System.out.print(leftRow.getData(column));
+			}
+			else {
+				if (leftRow.getData(column) == null)
+					System.out.print("|");
+				else {
+					System.out.print("|");
+					System.out.print(leftRow.getData(column));
+				}
+			}
+				
+		}
+		
+		// print data from right row
+		for (String column : rightColumns) {
+			if (rightRow.getData(column) == null)
+				System.out.print("|");
+			else {
+				System.out.print("|");
+				System.out.print(rightRow.getData(column));
+			}
+		}		
+		
+		System.out.print("\n");
+	}
+	
 	private List<Criteria> parseSelectionCriteria(Vector<String> commandVector) {
 		
 		List<Criteria> criteriaList = new ArrayList<Criteria>();
@@ -358,7 +565,7 @@ public class Executer {
 	
 	private List<JoinCriteria> parseJoinSelectionCriteria(Vector<String> commandVector) {
 		Iterator<String> tokens = commandVector.iterator();
-		List<String> tableNameTokens = new ArrayList<String>(); 
+		List<String> tableNameTokens = new ArrayList<String>();
 		List<JoinCriteria> allJoinCriteria = new ArrayList<JoinCriteria>();
 		Map<String, String> tableNames;
 		JoinCriteria joinCriteria = new JoinCriteria();

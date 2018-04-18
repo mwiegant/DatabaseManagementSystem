@@ -12,6 +12,7 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Iterator;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -193,7 +194,7 @@ public class DatabasePersister {
 	 */
 	private Map<String, String> loadTableColumns(Table table, String tableColumnLine) {
 		String[] columnTokens = tableColumnLine.split("\\|");
-		Map<String, String> columns = new HashMap<String, String>();
+		Map<String, String> columns = new LinkedHashMap<String, String>();
 		
 		for (String column : columnTokens) {
 			String[] tokens = column.trim().split(" ");	// col_name col_type
@@ -215,9 +216,9 @@ public class DatabasePersister {
 	}
 	
 	private void loadTableRow(Table table, Map<String, String> columns, String tableRowLine) {
-		String[] data = tableRowLine.split("|");
-		String[] colNames = (String[]) columns.keySet().toArray();
-		List<String> colTypes = (List<String>) columns.values();
+		String[] data = tableRowLine.split(" \\|");
+		Object[] colNames = columns.keySet().toArray();
+		List<String> colTypes = new ArrayList<String>((Collection<String>) columns.values());
 		Row row = new Row();
 		
 		// there is technically a possibility of having more or less data elements than columns...
@@ -226,7 +227,7 @@ public class DatabasePersister {
 		try {
 			// add each column to the Row object
 			for (int i = 0; i < numColumns; i++) {			
-				if (!row.addData(colNames[i], colTypes.get(i), data[i]))
+				if (!row.addData((String) colNames[i], colTypes.get(i), data[i]))
 					System.out.println(
 						String.format("Error while adding column of data to a tablerow in table %1$s.", 
 							table.getTableName()));							

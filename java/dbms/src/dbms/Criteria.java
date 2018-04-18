@@ -15,5 +15,5 @@ public class Criteria {
 		this.colName = colName;
 		this.value = value;
 		this.operator = operator;
-	}
+	}	
 }
