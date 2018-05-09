@@ -16,6 +16,9 @@ public class Parser {
 		String firstCommand = null;
 		Vector<String> commandVector;
 
+		// 
+//		command = command.replace("(", " ( ").replace(")", " ) ").replace(",", " , ");
+		
 		// Break up command into a array of Strings
 		commandVector = splitCommand(command);
 		
@@ -49,6 +52,13 @@ public class Parser {
         case "delete":
             result = validateDeleteStatement(commandVector);
             break;
+        case "begin":
+        		result = (commandVector.get(1).replace(";", "")).equals("transaction") ? "valid" : "invalid";
+        		break;
+        case "commit":
+        case "commit;":
+        		result = "valid";
+    			break;        
         default: 
         		result = String.join(" ", commandVector.toArray(new String[commandVector.size()]));   		
 		}
@@ -57,6 +67,8 @@ public class Parser {
 	}
 
 	Vector<String> splitCommand(String command) {
+		command = command.replace("(", " (").replace(",", ", ");
+		command = command.replace("  ", " ");
 		
 		String[] commandArray = command.split(" ");
 		String[] result = null;

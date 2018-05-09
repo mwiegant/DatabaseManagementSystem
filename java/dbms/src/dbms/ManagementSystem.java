@@ -15,7 +15,7 @@ public class ManagementSystem {
 	private String architecture = null;
   	DatabasePersister databasePersister = new DatabasePersister();
   	Database database = null;
-    Executer executer = new Executer(null);
+    Executer executer = new Executer();
     Parser parser = new Parser();    
     List<String> databaseNames = new ArrayList<String>();
     boolean exitProgram = false;
@@ -119,7 +119,7 @@ public class ManagementSystem {
 			 databasePersister.saveDatabase(buildCompleteDatabasePath(dbName), database);
 
 		database = newDb;
-		executer = new Executer(database);		
+		executer = new Executer(database, buildCompleteDatabasePath(dbName));		
 		return true;
 	}
 

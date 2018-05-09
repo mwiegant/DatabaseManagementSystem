@@ -13,14 +13,17 @@ public class Executer {
 	
 	private Database db;
 	private Parser parser;
+	private String dbPath;
+	private Transaction transaction = null;
 	
 	Executer() {
 		this.parser = new Parser();
 	}
 	
-	Executer(Database db) {
+	Executer(Database db, String dbPath) {
 		this.parser = new Parser();
 		this.db = db;
+		this.dbPath = dbPath;
 	}
 	
 	Database getDatabase() {
@@ -52,6 +55,23 @@ public class Executer {
 		else
 			firstCommand = commandVector.elementAt(0).toLowerCase();
 		
+		// begin transaction, but only if one isn't already in progress
+		if (commandVector.elementAt(0).equals("begin") && commandVector.elementAt(1).equals("transaction")) {
+			if (transaction == null)
+				transaction = new Transaction(dbPath);
+			else
+				System.out.println("Error: Transaction already in progress.");
+		}
+		
+		// commit changes to file, but only if a transaction is currently in progress
+		if (firstCommand.equals("commit")) {
+			if (transaction != null) {
+				transaction.commitTransactions(db);
+			}
+			else
+				System.out.println("Transaction abort.");
+				
+		}
 		
 		// parse join or selection criteria
 		isJoinQuery = isJoinQuery(commandVector);
