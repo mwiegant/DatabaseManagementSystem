@@ -17,7 +17,7 @@ public class Parser {
 		Vector<String> commandVector;
 
 		// 
-//		command = command.replace("(", " ( ").replace(")", " ) ").replace(",", " , ");
+		
 		
 		// Break up command into a array of Strings
 		commandVector = splitCommand(command);
@@ -68,7 +68,7 @@ public class Parser {
 
 	Vector<String> splitCommand(String command) {
 		command = command.replace("(", " (").replace(",", ", ");
-		command = command.replace("  ", " ");
+		command = command.replace("  ", " ").replace(";", "");
 		
 		String[] commandArray = command.split(" ");
 		String[] result = null;

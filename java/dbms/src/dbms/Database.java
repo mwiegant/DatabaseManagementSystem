@@ -125,8 +125,8 @@ public class Database {
 	
 	
 
-	public void addTable(String tableName, Table table) {
-		// TODO
+	public void addTable(Table table) {
+		tables.add(table);
 	}
 	
 	public boolean createTable(String name, Vector<Pair<String, String>> columnInfo)

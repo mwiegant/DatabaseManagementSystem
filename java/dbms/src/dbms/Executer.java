@@ -57,19 +57,25 @@ public class Executer {
 		
 		// begin transaction, but only if one isn't already in progress
 		if (commandVector.elementAt(0).equals("begin") && commandVector.elementAt(1).equals("transaction")) {
-			if (transaction == null)
+			if (transaction == null) {
 				transaction = new Transaction(dbPath);
+				
+				// immediately commit what has already been done to the file system
+				transaction.commitTransactions(db, true);
+				return "Transaction starts.";
+			}
 			else
-				System.out.println("Error: Transaction already in progress.");
+				return "Error: Transaction already in progress.";
 		}
 		
 		// commit changes to file, but only if a transaction is currently in progress
 		if (firstCommand.equals("commit")) {
-			if (transaction != null) {
-				transaction.commitTransactions(db);
+			if (transaction != null && transaction.hasLocks()) {
+				transaction.commitTransactions(db, false);
+				return "Transaction committed.";
 			}
 			else
-				System.out.println("Transaction abort.");
+				return "Transaction abort.";
 				
 		}
 		
@@ -103,7 +109,7 @@ public class Executer {
 			
 		}
 		
-		switch (firstCommand.toLowerCase()) {
+		switch (firstCommand.toLowerCase()) {		
         case "create":
         		result = executeCreateTableCommand(commandVector);
             break;
@@ -128,6 +134,11 @@ public class Executer {
         case "delete":
             result = executeDeleteCommand(matchingRows, otherRows, commandVector);
             break;
+        // these two commands are supported above, but they need a case statement here so they don't
+        // output as 'invalid sql command' s
+        case "begin":
+        case "commit":
+        		break;
         default: 
         		result = "INVALID SQL COMMAND: " + firstCommand;		
 		}
@@ -185,6 +196,18 @@ public class Executer {
 		if (commandVector.elementAt(3).equals("ADD"))
 		{
 			table = db.getTable(commandVector.elementAt(2));
+
+			if (transaction != null && table != null) {			
+				// check for a lock on this table
+				if (transaction.isLocked(table.getTableName())) {
+					System.out.print("Error: Table Flights is locked!");
+					return "";
+				}
+				// else, put a lock on this table
+				else {
+					transaction.addLock(table.getTableName());
+				}
+			}
 			
 			if (table != null)
 			{
@@ -202,6 +225,18 @@ public class Executer {
 		String message = new String();
 		Table table = db.getTable(extractTableName(commandVector));
 
+		if (transaction != null && table != null) {			
+			// check for a lock on this table
+			if (transaction.isLocked(table.getTableName())) {
+				System.out.println("Error: Table Flights is locked!");
+				return "";
+			}
+			// else, put a lock on this table
+			else {
+				transaction.addLock(table.getTableName());
+			}
+		}		
+		
 		// SELECT * FROM table_name
 		if (table != null && commandVector.size() == 4) {
 			Map<String,String> columns;
@@ -215,9 +250,10 @@ public class Executer {
 			
 			Iterator<Row> it = table.getTableData();
 			while (it.hasNext()) {
+				Row row = it.next();
 				message += "\n";
 				for (String key : columns.keySet())
-					message += it.next().getData(key) + "|";
+					message += row.getData(key) + "|";
 				message = message.substring(0, message.length() - 1);
 			}
 			
@@ -258,6 +294,18 @@ public class Executer {
 		int commandIndex = 4;
 		Row row = new Row();
 		
+		if (transaction != null && table != null) {			
+			// check for a lock on this table
+			if (transaction.isLocked(table.getTableName())) {
+				System.out.println("Error: Table Flights is locked!");
+				return "";
+			}
+			// else, put a lock on this table
+			else {
+				transaction.addLock(table.getTableName());
+			}
+		}
+		
 		for (String key : columns.keySet()) {
 			row.addData(key, columns.get(key), commandArray[commandIndex]);			
 			commandIndex++;
@@ -273,6 +321,18 @@ public class Executer {
 		Table table = db.getTable(commandArray[1]);
 		int updateCount = 0;
 
+		if (transaction != null && table != null) {			
+			// check for a lock on this table
+			if (transaction.isLocked(table.getTableName())) {
+				System.out.println("Error: Table Flights is locked!");
+				return "";
+			}
+			// else, put a lock on this table
+			else {
+				transaction.addLock(table.getTableName());
+			}
+		}
+		
 		if (table != null) {
 			Map<String,String> columns;
 			columns = table.getColumns();
@@ -286,14 +346,15 @@ public class Executer {
 					// Iterate through rows and update values
 					Iterator<Row> it = table.getTableData();
 					while (it.hasNext()) {
+						Row row = it.next();
 						
 						// If a match for the where clause
 						switch (commandArray[8]) { 
 						case "=" : {
-							if (it.next().getData(commandArray[7]).equals(commandArray[9])) {
+							if (row.getData(commandArray[7]).equals(commandArray[9])) {
 								// Check to make sure the column exists that we are updating
-								if (it.next().getData(commandArray[3]) != null) {
-									it.next().data.put(commandArray[3], commandArray[5]);
+								if (row.getData(commandArray[3]) != null) {
+									row.data.put(commandArray[3], commandArray[5]);
 									updateCount++;							 	
 								}
 							}
@@ -302,10 +363,10 @@ public class Executer {
 						
 						case ">" : {
 							// Convert to int and compare
-							if (it.next().getData(commandArray[7]).equals(commandArray[9])) {
+							if (row.getData(commandArray[7]).equals(commandArray[9])) {
 								// Check to make sure the column exists that we are updating
-								if (it.next().getData(commandArray[3]) != null) {
-									it.next().data.put(commandArray[3], commandArray[5]);
+								if (row.getData(commandArray[3]) != null) {
+									row.data.put(commandArray[3], commandArray[5]);
 									updateCount++;							 	
 								}
 							}
@@ -314,10 +375,10 @@ public class Executer {
 						
 						case "<" : {
 							// Convert to int and compare
-							if (it.next().getData(commandArray[7]).equals(commandArray[9])) {
+							if (row.getData(commandArray[7]).equals(commandArray[9])) {
 								// Check to make sure the column exists that we are updating
-								if (it.next().getData(commandArray[3]) != null) {
-									it.next().data.put(commandArray[3], commandArray[5]);
+								if (row.getData(commandArray[3]) != null) {
+									row.data.put(commandArray[3], commandArray[5]);
 									updateCount++;							 	
 								}
 							}
@@ -344,6 +405,19 @@ public class Executer {
 	private String executeDeleteCommand(List<Row> matchingRows, List<Row> otherRows, Vector<String> commandVector) {
 		
 		Table table = db.getTable(extractTableName(commandVector));
+		
+		if (transaction != null && table != null) {			
+			// check for a lock on this table
+			if (transaction.isLocked(table.getTableName())) {
+				System.out.println("Error: Table Flights is locked!");
+				return "";
+			}
+			// else, put a lock on this table
+			else {
+				transaction.addLock(table.getTableName());
+			}
+		}
+		
 		table.setTableData(otherRows);
 		
 		// Have to divide by three because for some reason it adds a bunch of null values
@@ -726,7 +800,7 @@ public class Executer {
 		
 		for (int i = 0; i < commandArray.length; i++) {
 			if (commandArray[i].toLowerCase().equals("from") || commandArray[i].toLowerCase().equals("update"))
-				return commandArray[i+1];
+				return commandArray[i+1].toLowerCase();
 		}
 		return null;
 	}

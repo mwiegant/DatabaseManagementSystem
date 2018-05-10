@@ -34,7 +34,7 @@ public class DatabasePersister {
 			// load each Table object completely, with data and all
 			Table table = loadTable(dbCompletePath, tableName);
 			
-			db.addTable(tableName, table);		
+			db.addTable(table);		
 		}
 		
 		return db;
@@ -133,7 +133,9 @@ public class DatabasePersister {
 
 			    for (int i = 0; i < listOfFiles.length; i++) {
 					if (listOfFiles[i].isFile()) {
-						tableNames.add(listOfFiles[i].getName());
+						// add all tables, but do not add the locked tables
+						if (!listOfFiles[i].getName().endsWith("_lock"))
+							tableNames.add(listOfFiles[i].getName());
 					}
 			    }
 			}
@@ -317,7 +319,7 @@ public class DatabasePersister {
 	
 	
 	private void deleteDatabaseBackup(String dbCompletePath, String databaseName) {
-		String backupPath = dbCompletePath + databaseName + "_old";
+		String backupPath = dbCompletePath + "_old";
 		File backup = new File(backupPath);
 		
 		// only delete the backup if it exists (won't exist if this is the first time saving this database)

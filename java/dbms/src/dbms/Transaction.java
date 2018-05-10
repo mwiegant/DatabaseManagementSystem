@@ -30,6 +30,12 @@ public class Transaction {
 		}
 	}
 	
+	public boolean hasLocks() {
+		if (locks.size() > 0)
+			return true;
+		return false;
+	}
+	
 	public boolean isLocked(String tableName) {
 		List<String> lockedTables = getLockedTables();		
 		String name = String.format("%1$s_lock", tableName);
@@ -37,9 +43,16 @@ public class Transaction {
 		return lockedTables.contains(name);
 	}
 	
-	public void commitTransactions(Database db) {
+	/*
+	 * Commits any transactions that have been done to the file system.
+	 * 
+	 * The 'startup' bool allows the user to commit transactions right after 
+	 * the Transaction object was created, but should always be false in all 
+	 * other cases.
+	 */
+	public void commitTransactions(Database db, boolean startup) {
 		// if no files are locked, then there is nothing to commit and this is therefore an abort
-		if (locks.size() == 0) {
+		if (!startup && locks.size() == 0) {
 			System.out.println("Transaction abort.");
 			return;
 		}
@@ -58,7 +71,7 @@ public class Transaction {
 			return;
 		
 		for (String lockName : locks) {
-			String lockPath = dbPath + lockName;
+			String lockPath = dbPath + lockName + "_lock";
 			File lockFile = new File(lockPath);
 			
 			if (lockFile.exists()) {
